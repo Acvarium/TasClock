@@ -1,62 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
 
-    <ImageView
-        android:id="@+id/background"
+    <ListView
+        android:id="@+id/lvMain"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="centerCrop"
-        android:src="@drawable/bg" />
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:layout_weight="2"
+        android:background="@drawable/task_list_shape" >
+    </ListView>
 
     <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:orientation="vertical" >
+        android:id="@+id/LinearLayout01"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_gravity="center_horizontal"
+        android:orientation="horizontal"
+        android:paddingBottom="10dp"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
+        android:paddingTop="5dp" >
 
-        <ListView
-            android:id="@+id/lvMain"
+        <Button
+            android:id="@+id/add_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:layout_weight="2"
-            android:background="@drawable/task_list_shape" >
-        </ListView>
+            android:layout_margin="3dp"
+            android:layout_weight="1"
+            android:background="@drawable/buttonshape"
+            android:text="Add"
+            android:textSize="@dimen/button_font_size" >
+        </Button>
 
-        <LinearLayout
-            android:id="@+id/LinearLayout01"
+        <Button
+            android:id="@+id/remove_button"
             android:layout_width="match_parent"
-            android:layout_height="70dp"
-            android:layout_gravity="center_horizontal"
-            android:orientation="horizontal"
-            android:paddingBottom="10dp"
-            android:paddingLeft="15dp"
-            android:paddingRight="15dp"
-            android:paddingTop="5dp" >
-
-            <Button
-                android:id="@+id/add_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="3dp"
-                android:layout_weight="1"
-                android:background="@drawable/buttonshape"
-                android:text="Add"
-                android:textSize="@dimen/button_font_size" >
-            </Button>
-
-            <Button
-                android:id="@+id/remove_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="3dp"
-                android:layout_weight="1"
-                android:background="@drawable/buttonshape"
-                android:text="Remove"
-                android:textSize="@dimen/button_font_size" >
-            </Button>
-        </LinearLayout>
+            android:layout_height="wrap_content"
+            android:layout_margin="3dp"
+            android:layout_weight="1"
+            android:background="@drawable/buttonshape"
+            android:text="Remove"
+            android:textSize="@dimen/button_font_size" >
+        </Button>
     </LinearLayout>
 
-    </FrameLayout>
+</LinearLayout>
