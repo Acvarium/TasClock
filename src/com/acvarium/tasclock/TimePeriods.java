@@ -7,9 +7,12 @@ import android.content.SharedPreferences.Editor;
 public class TimePeriods {
 	private Vector<TimePeriod> timePeriods = new Vector<TimePeriod>();
 	private String tpID;
+	public boolean tpStarted;
+	private long sSum = 0L;
 
 	public TimePeriods(String TimePeriodID) {
 		tpID = TimePeriodID;
+		tpStarted = false;
 	}
 
 	public void setID(String TimePeriodID) {
@@ -20,30 +23,53 @@ public class TimePeriods {
 		return tpID;
 	}
 
+	public void start() {
+		long t = ((System.currentTimeMillis()) / 1000);
+		timePeriods.add(new TimePeriod(t, 0));
+		tpStarted = true;
+	}
+
+	public void stop() {
+		long t = ((System.currentTimeMillis()) / 1000);
+		timePeriods.lastElement().setEnd(t);
+		tpStarted = false;
+		sSum = getSumOfAllPeriods();
+	}
+
 	public void add(long startTime, long endTime) {
+		if (endTime == 0)
+			tpStarted = true;
 		timePeriods.add(new TimePeriod(startTime, endTime));
+		sSum = getSumOfAllPeriods();
 	}
 
 	public long getStartTime(int j) {
-		return timePeriods.elementAt(j).start;
+		return timePeriods.elementAt(j).getStart();
 	}
 
 	public long getEndTime(int j) {
-		return timePeriods.elementAt(j).end;
+		return timePeriods.elementAt(j).getEnd();
 	}
-	public void clear(){
+
+	public void clear() {
 		timePeriods.clear();
 	}
 
-	public int getQuantity() {
+	public int getSize() {
 		return timePeriods.size();
 	}
-	
+
 	public long getSumOfAllPeriods() {
 		long sum = 0;
 
-		for (TimePeriod p : timePeriods) {
-			sum += p.getDuration();
+		if (tpStarted) {
+			long lastDuration = ((System.currentTimeMillis()) / 1000)-timePeriods.lastElement().getStart();
+			sum = sSum + lastDuration;
+		} else {
+			for (TimePeriod p : timePeriods) {
+				sum += p.getDuration();
+			}
+			sSum = sum;
 		}
 		return sum;
 	}
@@ -55,10 +81,12 @@ public class TimePeriods {
 	public void saveData(Editor ed) {
 		ed.putLong("tpnum", timePeriods.size());
 		ed.putString("tpID", tpID);
-		
+
 		for (int j = 0; j < timePeriods.size(); j++) {
-			ed.putLong(String.valueOf(tpID + "_s_" + j), timePeriods.elementAt(j).start);
-			ed.putLong(String.valueOf(tpID + "_e_" + j), timePeriods.elementAt(j).end);
+			ed.putLong(String.valueOf(tpID + "_s_" + j),
+					timePeriods.elementAt(j).getStart());
+			ed.putLong(String.valueOf(tpID + "_e_" + j),
+					timePeriods.elementAt(j).getEnd());
 		}
 	}
 

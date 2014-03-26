@@ -5,26 +5,33 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.SystemClock;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 
 public class TimingActivity extends Activity implements OnClickListener {
-	private long c = System.currentTimeMillis();
-	private boolean startStop = false;
+	private long c;
 	private Button startBtn;
 	private Button editBtn;
 	private Button resetBtn;
-	private long startTime, endTime;
 	private TextView mainTV, dataTV;
+	private Handler myHandler = new Handler();
 	private String tpID = "T1";
 	private TimePeriods timePeriods;
 	private SharedPreferences sPref;
 	private Editor ed;
+	private long sTime = 0L;
+	
+	long timeInMillies = 0L;
+	long timeSwap = 0L;
+	long finalTime = 0L;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.timing);
 
@@ -50,25 +57,35 @@ public class TimingActivity extends Activity implements OnClickListener {
 		resetBtn.setOnClickListener(this);
 	}
 
+	private Runnable updateTimerMethod = new Runnable() {
+
+		public void run() {
+
+			c = timePeriods.getSumOfAllPeriods();
+			String ss = String.format("%02d:%02d:%02d", c / 3600, (c % 3600) / 60,(c % 60));
+			mainTV.setText(ss);
+			myHandler.postDelayed(this, 1000);
+		}
+
+	};
+	
 	private void readData() {
 
 		timePeriods.clear();
 		long tpnum = sPref.getLong("tpnum", 0);
 		for (int i = 0; i < tpnum; i++) {
-			startTime = sPref.getLong(String.valueOf(tpID + "_s_" + i), 0);
-			endTime = sPref.getLong(String.valueOf(tpID + "_e_" + i), 0);
-
+			long startTime = sPref.getLong(String.valueOf(tpID + "_s_" + i), 0);
+			long endTime = sPref.getLong(String.valueOf(tpID + "_e_" + i), 0);
 			timePeriods.add(startTime, endTime);
 		}
 	}
 
 	private void rewriteScreen() {
 		c = timePeriods.getSumOfAllPeriods();
-		String ss = String.format("%02d:%02d:%02d", c / 3600, (c % 3600) / 60,
-				(c % 60));
+		String ss = String.format("%02d:%02d:%02d", c / 3600, (c % 3600) / 60,(c % 60));
 		mainTV.setText(ss);
 		ss = "";
-		for (int i = 0; i < timePeriods.getQuantity(); i++) {
+		for (int i = 0; i < timePeriods.getSize(); i++) {
 			c = timePeriods.getSumOfPeriod(i);
 			ss = ss
 					+ String.format("%02d:%02d:%02d", c / 3600,
@@ -82,19 +99,20 @@ public class TimingActivity extends Activity implements OnClickListener {
 		switch (v.getId()) {
 		case R.id.start_button:
 
-			if (startStop) { // --STOP---
-				startStop = false;
-				endTime = ((System.currentTimeMillis()) / 1000);
-				timePeriods.add(startTime, endTime);
+			if (timePeriods.tpStarted) { // --STOP---
+
+				timePeriods.stop();
 				rewriteScreen();
 				startBtn.setText("START");
 				startBtn.setBackgroundResource(R.drawable.startbuttonshape);
+				myHandler.removeCallbacks(updateTimerMethod);
 
 			} else { // --START---
-				startStop = true;
-				startTime = ((System.currentTimeMillis()) / 1000);
+
+				timePeriods.start();
 				startBtn.setText("STOP");
 				startBtn.setBackgroundResource(R.drawable.stopbuttonshape);
+				myHandler.postDelayed(updateTimerMethod,0);
 			}
 
 			break;
@@ -146,9 +164,8 @@ public class TimingActivity extends Activity implements OnClickListener {
 	}
 
 	private void closeAndSave() {
-		if (startStop) { // --STOP---
-			endTime = ((System.currentTimeMillis()) / 1000);
-			timePeriods.add(startTime, endTime);
+		if (timePeriods.tpStarted) { // --STOP---
+			timePeriods.stop();
 		}
 		ed = sPref.edit();
 		timePeriods.saveData(ed);
