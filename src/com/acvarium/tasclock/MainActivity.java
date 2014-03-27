@@ -14,7 +14,6 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemLongClickListener;
-import android.widget.AdapterViewFlipper;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -29,10 +28,13 @@ public class MainActivity extends Activity implements OnClickListener {
 	private ArrayAdapter<String> listAdapter;
 	private boolean removeButtonState = false;
 	private int tpnum;
-	private int editPosition; 
+	private int editPosition;
 	private Editor ed;
 	private String[] ids;
 	private Vector<tpTask> tpTasks = new Vector<tpTask>();
+
+	private boolean startStop = false;
+	private int sElenetPosition = 0;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -53,10 +55,10 @@ public class MainActivity extends Activity implements OnClickListener {
 
 		readData();
 		list.setAdapter(listAdapter);
-		
+
 		// Creating an item click listener, to open/close our toolbar for each
 		// item
-		
+
 		list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, final View view,
 					int position, long id) {
@@ -68,16 +70,21 @@ public class MainActivity extends Activity implements OnClickListener {
 				ExpandAnimation expandAni = new ExpandAnimation(toolbar, 30);
 
 				// Start the animation on the toolbar
+
 				toolbar.startAnimation(expandAni);
 				if (removeButtonState) {
 					listAdapter.remove(listAdapter.getItem(position));
 
 					SharedPreferences TimeDataFile;
-					TimeDataFile = getSharedPreferences(tpTasks.elementAt(position).getId(), Activity.MODE_PRIVATE);
+					TimeDataFile = getSharedPreferences(
+							tpTasks.elementAt(position).getId(),
+							Activity.MODE_PRIVATE);
 					Editor clearFile = TimeDataFile.edit();
 					clearFile.clear();
 					clearFile.commit();
-					Log.d(LOG_TAG, "Clear data of " + tpTasks.elementAt(position).getId());
+					Log.d(LOG_TAG,
+							"Clear data of "
+									+ tpTasks.elementAt(position).getId());
 					tpTasks.remove(position);
 
 					removeBtn.setBackgroundResource(R.drawable.buttonshape);
@@ -107,7 +114,7 @@ public class MainActivity extends Activity implements OnClickListener {
 
 		startActivity(intent);
 	}
-	
+
 	private void editLabel(int position) {
 		editPosition = position;
 		Intent intent = new Intent(this, AddTask.class);
@@ -128,7 +135,6 @@ public class MainActivity extends Activity implements OnClickListener {
 			tpTasks.add(new tpTask(la, ids[i]));
 			listAdapter.add(la);
 		}
-
 	}
 
 	private void saveData() {
@@ -147,7 +153,7 @@ public class MainActivity extends Activity implements OnClickListener {
 	/**
 	 * A simple implementation of list adapter.
 	 */
-	class CustomListAdapter extends ArrayAdapter<String>{
+	class CustomListAdapter extends ArrayAdapter<String> {
 
 		public CustomListAdapter(Context context, int textViewResourceId) {
 			super(context, textViewResourceId);
@@ -155,36 +161,56 @@ public class MainActivity extends Activity implements OnClickListener {
 		}
 
 		@Override
-		public View getView(final int position, View convertView, ViewGroup parent) {
+		public View getView(final int position, View convertView,
+				ViewGroup parent) {
 
 			if (convertView == null) {
 				convertView = getLayoutInflater().inflate(R.layout.list_item,
 						null);
 			}
 
-		     Button ViewBtn;
-		     ViewBtn = (Button) convertView.findViewById(R.id.view_button);
-		     ViewBtn.setOnClickListener(new OnClickListener() {
+			// If ++--VIEW--++ button on expandable tab pressed
+			((Button) convertView.findViewById(R.id.view_button))
+					.setOnClickListener(new OnClickListener() {
+						@Override
+						public void onClick(View v) {
+							removeButtonState = false;
+							removeBtn
+									.setBackgroundResource(R.drawable.buttonshape);
+							workTimeAct(tpTasks.elementAt(position).getId());
+						}
+					});
 
+			// If ++--EDIT--++ button on expandable tab pressed
+			((Button) convertView.findViewById(R.id.edit_button))
+					.setOnClickListener(new OnClickListener() {
+						@Override
+						public void onClick(View v) {
+							removeButtonState = false;
+							removeBtn
+									.setBackgroundResource(R.drawable.buttonshape);
+							editLabel(position);
+						}
+					});
+
+			// If ++--START--++ button on expandable tab pressed
+			final Button ss_btn;
+			ss_btn = (Button) convertView.findViewById(R.id.st_button);
+
+			ss_btn.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					Log.d(LOG_TAG, "View " + position );
-					
-				}
-			});
 			
-			((TextView) convertView.findViewById(R.id.title)).setText(tpTasks.elementAt(position).getLabel());
-			((TextView) convertView.findViewById(R.id.title2))
-			.setText(tpTasks.elementAt(position).getId());
-			
-			((Button) convertView.findViewById(R.id.edit_button)).setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					Log.d(LOG_TAG, "Edit " + position );
-					editLabel(position);
+					removeButtonState = false;
+					removeBtn.setBackgroundResource(R.drawable.buttonshape);
+
 				}
 			});
 
+			((TextView) convertView.findViewById(R.id.title)).setText(tpTasks
+					.elementAt(position).getLabel());
+			((TextView) convertView.findViewById(R.id.title2)).setText(tpTasks
+					.elementAt(position).getId());
 
 			// Resets the toolbar to be closed
 			View toolbar = convertView.findViewById(R.id.toolbar);
@@ -193,7 +219,6 @@ public class MainActivity extends Activity implements OnClickListener {
 
 			return convertView;
 		}
-
 	}
 
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -202,17 +227,23 @@ public class MainActivity extends Activity implements OnClickListener {
 		}
 		String name = data.getStringExtra("name");
 		Boolean editstate = data.getBooleanExtra("edit", false);
-		Log.d(LOG_TAG, "Edit name = " + name);
+
 		if (name.length() != 0) {
-			if(editstate){
+			if (editstate) {
 				tpTasks.elementAt(editPosition).setLabel(name);
 				listAdapter.notifyDataSetChanged();
-				Log.d(LOG_TAG, "Edit state " + name);	
-			}else{
-				tpTasks.add(new tpTask(name, Integer.toHexString(name.hashCode())));
+				// Save changes
+				ed.putString("ids" + editPosition,
+						tpTasks.elementAt(editPosition).getId());
+				ed.putString(tpTasks.elementAt(editPosition).getId() + "_lab",
+						tpTasks.elementAt(editPosition).getLabel());
+				ed.commit();
+			} else {
+				tpTasks.add(new tpTask(name, Integer.toHexString(name
+						.hashCode())));
 				listAdapter.add(name);
 				tpnum = tpTasks.size();
-				Log.d(LOG_TAG, "tpnum = " + tpnum);				
+
 			}
 
 		}
@@ -223,6 +254,8 @@ public class MainActivity extends Activity implements OnClickListener {
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.add_button:
+			removeButtonState = false;
+			removeBtn.setBackgroundResource(R.drawable.buttonshape);
 			Intent intent = new Intent(this, AddTask.class);
 			startActivityForResult(intent, 1);
 			// list.setAdapter(listAdapter);

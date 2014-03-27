@@ -11,7 +11,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_margin="15dp"
         android:ems="10"
-        android:lines="1"
+        android:lines="2"
         android:maxLines="1"
         android:textSize="20dp" >
 

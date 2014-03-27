@@ -23,11 +23,6 @@ public class TimingActivity extends Activity implements OnClickListener {
 	private TimePeriods timePeriods;
 	private SharedPreferences sPref;
 	private Editor ed;
-	private long sTime = 0L;
-	
-	long timeInMillies = 0L;
-	long timeSwap = 0L;
-	long finalTime = 0L;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

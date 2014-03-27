@@ -5,10 +5,13 @@ public class tpTask {
 	private String tpId,label;
 	private String comment;
 	private int state;
+	public TimePeriods timePeriods;
+
 	
 	public tpTask(String label, String tpId){
 		this.label = label;
 		this.tpId = tpId;
+		timePeriods = new TimePeriods(tpId);
 		state = 0;
 	}
 	
