@@ -64,6 +64,7 @@ public class MainActivity extends Activity implements OnClickListener {
 					int position, long id) {
 
 				View toolbar = view.findViewById(R.id.toolbar);
+				
 
 				// Creating the expand animation for the item
 
@@ -194,7 +195,8 @@ public class MainActivity extends Activity implements OnClickListener {
 					});
 
 			// If ++--START--++ button on expandable tab pressed
-			final Button ss_btn;
+			
+			/*final Button ss_btn;
 			ss_btn = (Button) convertView.findViewById(R.id.st_button);
 
 			ss_btn.setOnClickListener(new OnClickListener() {
@@ -205,7 +207,7 @@ public class MainActivity extends Activity implements OnClickListener {
 					removeBtn.setBackgroundResource(R.drawable.buttonshape);
 
 				}
-			});
+			});*/
 
 			((TextView) convertView.findViewById(R.id.title)).setText(tpTasks
 					.elementAt(position).getLabel());

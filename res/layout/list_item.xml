@@ -72,7 +72,7 @@
             android:textStyle="bold" />
 
         <Button
-            android:id="@+id/st_button"
+            android:id="@+id/st_button1"
             android:layout_width="60dp"
             android:layout_height="35dp"
             android:layout_gravity="bottom"
