@@ -15,27 +15,24 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
 public class MainActivity extends Activity implements OnClickListener {
 	final String LOG_TAG = "myLogs";
 	private SharedPreferences sPref;
-	private ImageButton addBtn, removeBtn;
+	private ImageButton addBtn, removeBtn, editBtn;
 	private ListView list;
 	private ArrayAdapter<String> listAdapter;
-	private boolean removeButtonState = false;
 	private int tpnum;
-	private int editPosition;
 	private Editor ed;
 	private String[] ids;
+	private int editPosition;
 	private Vector<tpTask> tpTasks = new Vector<tpTask>();
 
 	private boolean startStop = false;
-	private int sElenetPosition = 0;
+	private int sElenetPosition = -1;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -46,8 +43,11 @@ public class MainActivity extends Activity implements OnClickListener {
 
 		addBtn = (ImageButton) findViewById(R.id.add_button);
 		removeBtn = (ImageButton) findViewById(R.id.remove_button);
+		editBtn = (ImageButton) findViewById(R.id.edit_button);
+
 		addBtn.setOnClickListener(this);
 		removeBtn.setOnClickListener(this);
+		editBtn.setOnClickListener(this);
 
 		list = (ListView) findViewById(R.id.lvMain);
 
@@ -63,28 +63,8 @@ public class MainActivity extends Activity implements OnClickListener {
 		list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, final View view,
 					int position, long id) {
-
-				if (removeButtonState) {
-					listAdapter.remove(listAdapter.getItem(position));
-
-					SharedPreferences TimeDataFile;
-					TimeDataFile = getSharedPreferences(
-							tpTasks.elementAt(position).getId(),
-							Activity.MODE_PRIVATE);
-					Editor clearFile = TimeDataFile.edit();
-					clearFile.clear();
-					clearFile.commit();
-					Log.d(LOG_TAG,
-							"Clear data of "
-									+ tpTasks.elementAt(position).getId());
-					tpTasks.remove(position);
-
-					removeBtn.setBackgroundResource(R.drawable.buttonshape);
-					removeButtonState = false;
-					tpnum = tpTasks.size();
-					saveData();
-				}
-
+				sElenetPosition = position;
+				Log.d(LOG_TAG, "Selected element " + sElenetPosition);
 			}
 		});
 
@@ -161,7 +141,6 @@ public class MainActivity extends Activity implements OnClickListener {
 						null);
 			}
 
-
 			((TextView) convertView.findViewById(R.id.title)).setText(tpTasks
 					.elementAt(position).getLabel());
 			((TextView) convertView.findViewById(R.id.title2)).setText(tpTasks
@@ -197,6 +176,7 @@ public class MainActivity extends Activity implements OnClickListener {
 			}
 
 		}
+		listAdapter.notifyDataSetChanged();
 
 	}
 
@@ -204,24 +184,36 @@ public class MainActivity extends Activity implements OnClickListener {
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.add_button:
-			removeButtonState = false;
-			removeBtn.setBackgroundResource(R.drawable.buttonshape);
 			Intent intent = new Intent(this, AddTask.class);
 			startActivityForResult(intent, 1);
-			// list.setAdapter(listAdapter);
 
 			break;
 		case R.id.remove_button:
-			if (removeButtonState) {
-				removeBtn.setBackgroundResource(R.drawable.buttonshape);
-				removeButtonState = false;
-			} else {
-				removeBtn.setBackgroundResource(R.drawable.stopbuttonshape);
-				removeButtonState = true;
+			Log.d(LOG_TAG, "Removing element " +  sElenetPosition);
+			if (sElenetPosition >= 0) {
+				listAdapter.remove(listAdapter.getItem(sElenetPosition));
+				SharedPreferences TimeDataFile;
+				TimeDataFile = getSharedPreferences(
+						tpTasks.elementAt(sElenetPosition).getId(),
+						Activity.MODE_PRIVATE);
+				Editor clearFile = TimeDataFile.edit();
+				clearFile.clear();
+				clearFile.commit();
+				Log.d(LOG_TAG,
+						"Clear data of "
+								+ tpTasks.elementAt(sElenetPosition).getId());
+				tpTasks.remove(sElenetPosition);
+				tpnum = tpTasks.size();
+				saveData();
+				sElenetPosition = -1;
+			}
+			break;
+		case R.id.edit_button:
+			if (sElenetPosition >= 0) {
+				editLabel(sElenetPosition);
 			}
 
 			break;
-
 		default:
 			break;
 		}

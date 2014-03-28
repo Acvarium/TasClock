@@ -10,13 +10,12 @@ import android.os.SystemClock;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 public class TimingActivity extends Activity implements OnClickListener {
 	private long c;
-	private Button startBtn;
-	private Button editBtn;
-	private Button resetBtn;
+	private ImageButton startBtn, editBtn, resetBtn;
 	private TextView mainTV, dataTV;
 	private Handler myHandler = new Handler();
 	private String tpID = "T1";
@@ -38,9 +37,9 @@ public class TimingActivity extends Activity implements OnClickListener {
 
 		timePeriods = new TimePeriods(tpID);
 
-		startBtn = (Button) findViewById(R.id.start_button);
-		editBtn = (Button) findViewById(R.id.edit_button);
-		resetBtn = (Button) findViewById(R.id.reset_button);
+		startBtn = (ImageButton) findViewById(R.id.start_button);
+		editBtn = (ImageButton) findViewById(R.id.edit_button);
+		resetBtn = (ImageButton) findViewById(R.id.reset_button);
 		mainTV = (TextView) findViewById(R.id.mainTV);
 		dataTV = (TextView) findViewById(R.id.dataTV);
 
@@ -98,14 +97,14 @@ public class TimingActivity extends Activity implements OnClickListener {
 
 				timePeriods.stop();
 				rewriteScreen();
-				startBtn.setText("START");
-				startBtn.setBackgroundResource(R.drawable.startbuttonshape);
+				startBtn.setImageResource(R.drawable.play);
+				startBtn.setBackgroundResource(R.drawable.buttonshape);
 				myHandler.removeCallbacks(updateTimerMethod);
 
 			} else { // --START---
 
 				timePeriods.start();
-				startBtn.setText("STOP");
+				startBtn.setImageResource(R.drawable.stop);
 				startBtn.setBackgroundResource(R.drawable.stopbuttonshape);
 				myHandler.postDelayed(updateTimerMethod,0);
 			}

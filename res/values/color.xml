@@ -4,7 +4,7 @@
     <color name="startcolor">#1BFB27</color>
     <color name="stopcolor">#FB3C1B</color>
     <color name="black">#000000</color>
-    <color name="unselected_task">#00000000</color>
-    <color name="selected_task">#64FFFF00</color>
-
+    <color name="unselected_task">#00FFFFFF</color>
+    <color name="selected_task">#643F89FF</color>
+	<color name="sbcolor">#32FF533F</color>	
 </resources>

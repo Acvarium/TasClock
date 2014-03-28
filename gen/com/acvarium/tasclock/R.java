@@ -12,6 +12,7 @@ public final class R {
     }
     public static final class color {
         public static final int black=0x7f040002;
+        public static final int sbcolor=0x7f040005;
         public static final int selected_task=0x7f040004;
         public static final int startcolor=0x7f040000;
         public static final int stopcolor=0x7f040001;
@@ -37,65 +38,58 @@ public final class R {
         public static final int bookmark=0x7f020004;
         public static final int buttonshape=0x7f020005;
         public static final int calendar=0x7f020006;
-        public static final int clockshape=0x7f020007;
-        public static final int cut=0x7f020008;
-        public static final int dollar=0x7f020009;
-        public static final int edit=0x7f02000a;
-        public static final int euro=0x7f02000b;
-        public static final int good=0x7f02000c;
-        public static final int ic_launcher=0x7f02000d;
-        public static final int info=0x7f02000e;
-        public static final int listshape=0x7f02000f;
-        public static final int minus=0x7f020010;
-        public static final int money=0x7f020011;
-        public static final int move=0x7f020012;
-        public static final int okay=0x7f020013;
-        public static final int ourn=0x7f020014;
-        public static final int pause=0x7f020015;
-        public static final int play=0x7f020016;
-        public static final int plus=0x7f020017;
-        public static final int rcross=0x7f020018;
-        public static final int recross=0x7f020019;
-        public static final int refresh=0x7f02001a;
-        public static final int rminus=0x7f02001b;
-        public static final int roundedbutton=0x7f02001c;
-        public static final int rplus=0x7f02001d;
-        public static final int smallbutton=0x7f02001e;
-        public static final int smile1=0x7f02001f;
-        public static final int smile2=0x7f020020;
-        public static final int smile3=0x7f020021;
-        public static final int smile4=0x7f020022;
-        public static final int smile5=0x7f020023;
-        public static final int startbuttonshape=0x7f020024;
-        public static final int statistic=0x7f020025;
-        public static final int stop=0x7f020026;
-        public static final int stopbuttonshape=0x7f020027;
-        public static final int task_list_shape=0x7f020028;
-        public static final int tools=0x7f020029;
-        public static final int urn=0x7f02002a;
-        public static final int wokay=0x7f02002b;
-        public static final int wrecross=0x7f02002c;
+        public static final int cut=0x7f020007;
+        public static final int dollar=0x7f020008;
+        public static final int edit=0x7f020009;
+        public static final int euro=0x7f02000a;
+        public static final int good=0x7f02000b;
+        public static final int ic_launcher=0x7f02000c;
+        public static final int info=0x7f02000d;
+        public static final int minus=0x7f02000e;
+        public static final int money=0x7f02000f;
+        public static final int move=0x7f020010;
+        public static final int okay=0x7f020011;
+        public static final int ourn=0x7f020012;
+        public static final int pause=0x7f020013;
+        public static final int play=0x7f020014;
+        public static final int plus=0x7f020015;
+        public static final int rcross=0x7f020016;
+        public static final int recross=0x7f020017;
+        public static final int refresh=0x7f020018;
+        public static final int rminus=0x7f020019;
+        public static final int rplus=0x7f02001a;
+        public static final int smile1=0x7f02001b;
+        public static final int smile2=0x7f02001c;
+        public static final int smile3=0x7f02001d;
+        public static final int smile4=0x7f02001e;
+        public static final int smile5=0x7f02001f;
+        public static final int statistic=0x7f020020;
+        public static final int stop=0x7f020021;
+        public static final int stopbuttonshape=0x7f020022;
+        public static final int tools=0x7f020023;
+        public static final int urn=0x7f020024;
+        public static final int wokay=0x7f020025;
+        public static final int wrecross=0x7f020026;
     }
     public static final class id {
         public static final int LinearLayout01=0x7f080008;
-        public static final int LinearLayout02=0x7f08000e;
+        public static final int LinearLayout02=0x7f080011;
         public static final int add_button=0x7f08000b;
         public static final int add_ok_button=0x7f080001;
         public static final int bg_view=0x7f080003;
         public static final int cansel_button=0x7f080002;
-        public static final int dataTV=0x7f080014;
-        public static final int edit_button=0x7f080012;
+        public static final int dataTV=0x7f080012;
+        public static final int edit_button=0x7f08000c;
         public static final int etName=0x7f080000;
-        public static final int info_button=0x7f08000c;
         public static final int l1=0x7f080004;
         public static final int lvMain=0x7f080007;
-        public static final int mainTV=0x7f08000f;
+        public static final int mainTV=0x7f080013;
         public static final int play_button=0x7f08000a;
         public static final int remove_button=0x7f08000d;
-        public static final int reset_button=0x7f080011;
-        public static final int scrollView1=0x7f080013;
+        public static final int reset_button=0x7f08000f;
+        public static final int scrollView1=0x7f080010;
         public static final int settings_button=0x7f080009;
-        public static final int start_button=0x7f080010;
+        public static final int start_button=0x7f08000e;
         public static final int title=0x7f080005;
         public static final int title2=0x7f080006;
     }
@@ -140,7 +134,6 @@ public final class R {
  All customizations that are NOT specific to a particular API-level can go here. 
          */
         public static final int AppTheme=0x7f070001;
-        public static final int NoTitleDialog=0x7f070002;
-        public static final int generalnotitle=0x7f070003;
+        public static final int generalnotitle=0x7f070002;
     }
 }

@@ -21,15 +21,15 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="15dp"
-        android:layout_gravity="center_horizontal" >
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="15dp" >
 
         <ImageButton
             android:id="@+id/add_ok_button"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_marginRight="5dp"
-            android:background="#00ffffff"
+            android:background="@drawable/buttonshape"
             android:scaleType="fitCenter"
             android:src="@drawable/wokay" />
 
@@ -38,7 +38,7 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_marginLeft="25dp"
-            android:background="#00ffffff"
+            android:background="@drawable/buttonshape"
             android:scaleType="fitCenter"
             android:src="@drawable/wrecross" />
     </LinearLayout>

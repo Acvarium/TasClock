@@ -27,7 +27,7 @@
             android:layout_alignParentTop="true"
             android:layout_marginRight="10dp"
             android:adjustViewBounds="true"
-            android:background="#00ffffff"
+            android:background="@drawable/buttonshape"
             android:padding="10dp"
             android:scaleType="fitCenter"
             android:src="@drawable/tools" />
@@ -41,13 +41,13 @@
             android:gravity="center_horizontal" >
 
             <ImageButton
-                android:id="@+id/info_button"
+                android:id="@+id/edit_button"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:background="#00ffffff"
+                android:background="@drawable/buttonshape"
                 android:padding="10dp"
                 android:scaleType="fitCenter"
-                android:src="@drawable/info" />
+                android:src="@drawable/edit" />
         </LinearLayout>
 
         <ImageButton
@@ -57,7 +57,7 @@
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
             android:adjustViewBounds="true"
-            android:background="#00ffffff"
+            android:background="@drawable/buttonshape"
             android:padding="10dp"
             android:scaleType="fitCenter"
             android:src="@drawable/play" />
@@ -74,7 +74,7 @@
                 android:id="@+id/remove_button"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:background="#00ffffff"
+                android:background="@drawable/buttonshape"
                 android:padding="10dp"
                 android:scaleType="fitCenter"
                 android:src="@drawable/urn" />
@@ -88,7 +88,7 @@
             android:layout_alignParentTop="true"
             android:layout_marginLeft="10dp"
             android:adjustViewBounds="true"
-            android:background="#00ffffff"
+            android:background="@drawable/buttonshape"
             android:padding="10dp"
             android:scaleType="fitCenter"
             android:src="@drawable/rplus" />
