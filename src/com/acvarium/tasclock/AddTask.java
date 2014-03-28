@@ -8,11 +8,12 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 
 public class AddTask extends Activity implements OnClickListener {
 
 	private EditText etName;
-	private Button btnOK,cancelBtn;
+	private ImageButton btnOK,cancelBtn;
 	private Intent intent;
 	private boolean editState;
 	@Override
@@ -29,8 +30,8 @@ public class AddTask extends Activity implements OnClickListener {
 		if(editState){
 			etName.setText(eName);
 		}
-		btnOK = (Button) findViewById(R.id.add_ok_button);
-		cancelBtn = (Button)findViewById(R.id.cansel_button);
+		btnOK = (ImageButton) findViewById(R.id.add_ok_button);
+		cancelBtn = (ImageButton)findViewById(R.id.cansel_button);
 		cancelBtn.setOnClickListener(this);
 		btnOK.setOnClickListener(this);
 	}

@@ -2,7 +2,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@drawable/bg1"
     android:orientation="vertical" >
 
     <ListView
@@ -10,43 +9,89 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
-        android:layout_weight="2"
-        android:background="@drawable/task_list_shape" >
+        android:listSelector="@color/selected_task"
+        android:layout_weight="2" >
     </ListView>
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/LinearLayout01"
-        android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:layout_gravity="center_horizontal"
-        android:orientation="horizontal"
-        android:paddingBottom="10dp"
-        android:paddingLeft="15dp"
-        android:paddingRight="15dp"
-        android:paddingTop="5dp" >
+        android:layout_width="fill_parent"
+        android:layout_height="52dp"
+        android:background="#D6D6D6" >
 
-        <Button
+        <ImageButton
+            android:id="@+id/settings_button"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginRight="10dp"
+            android:adjustViewBounds="true"
+            android:background="#00ffffff"
+            android:padding="10dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/tools" />
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentTop="true"
+            android:layout_toLeftOf="@+id/play_button"
+            android:layout_toRightOf="@+id/add_button"
+            android:gravity="center_horizontal" >
+
+            <ImageButton
+                android:id="@+id/info_button"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="#00ffffff"
+                android:padding="10dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/info" />
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/play_button"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:adjustViewBounds="true"
+            android:background="#00ffffff"
+            android:padding="10dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/play" />
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentTop="true"
+            android:layout_toLeftOf="@+id/settings_button"
+            android:layout_toRightOf="@+id/play_button"
+            android:gravity="center_horizontal" >
+
+            <ImageButton
+                android:id="@+id/remove_button"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="#00ffffff"
+                android:padding="10dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/urn" />
+        </LinearLayout>
+
+        <ImageButton
             android:id="@+id/add_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="3dp"
-            android:layout_weight="1"
-            android:background="@drawable/buttonshape"
-            android:text="Add"
-            android:textSize="@dimen/button_font_size" >
-        </Button>
-
-
-        <Button
-            android:id="@+id/remove_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="3dp"
-            android:layout_weight="1"
-            android:background="@drawable/buttonshape"
-            android:text="Remove"
-            android:textSize="@dimen/button_font_size" >
-        </Button>
-    </LinearLayout>
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="10dp"
+            android:adjustViewBounds="true"
+            android:background="#00ffffff"
+            android:padding="10dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/rplus" />
+    </RelativeLayout>
 
 </LinearLayout>

@@ -16,6 +16,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -23,7 +24,7 @@ import android.widget.TextView;
 public class MainActivity extends Activity implements OnClickListener {
 	final String LOG_TAG = "myLogs";
 	private SharedPreferences sPref;
-	private Button addBtn, removeBtn;
+	private ImageButton addBtn, removeBtn;
 	private ListView list;
 	private ArrayAdapter<String> listAdapter;
 	private boolean removeButtonState = false;
@@ -43,8 +44,8 @@ public class MainActivity extends Activity implements OnClickListener {
 		sPref = getSharedPreferences("main_pref", Activity.MODE_PRIVATE);
 		ed = sPref.edit();
 
-		addBtn = (Button) findViewById(R.id.add_button);
-		removeBtn = (Button) findViewById(R.id.remove_button);
+		addBtn = (ImageButton) findViewById(R.id.add_button);
+		removeBtn = (ImageButton) findViewById(R.id.remove_button);
 		addBtn.setOnClickListener(this);
 		removeBtn.setOnClickListener(this);
 
@@ -63,16 +64,6 @@ public class MainActivity extends Activity implements OnClickListener {
 			public void onItemClick(AdapterView<?> parent, final View view,
 					int position, long id) {
 
-				View toolbar = view.findViewById(R.id.toolbar);
-				
-
-				// Creating the expand animation for the item
-
-				ExpandAnimation expandAni = new ExpandAnimation(toolbar, 30);
-
-				// Start the animation on the toolbar
-
-				toolbar.startAnimation(expandAni);
 				if (removeButtonState) {
 					listAdapter.remove(listAdapter.getItem(position));
 
@@ -170,54 +161,11 @@ public class MainActivity extends Activity implements OnClickListener {
 						null);
 			}
 
-			// If ++--VIEW--++ button on expandable tab pressed
-			((Button) convertView.findViewById(R.id.view_button))
-					.setOnClickListener(new OnClickListener() {
-						@Override
-						public void onClick(View v) {
-							removeButtonState = false;
-							removeBtn
-									.setBackgroundResource(R.drawable.buttonshape);
-							workTimeAct(tpTasks.elementAt(position).getId());
-						}
-					});
-
-			// If ++--EDIT--++ button on expandable tab pressed
-			((Button) convertView.findViewById(R.id.edit_button))
-					.setOnClickListener(new OnClickListener() {
-						@Override
-						public void onClick(View v) {
-							removeButtonState = false;
-							removeBtn
-									.setBackgroundResource(R.drawable.buttonshape);
-							editLabel(position);
-						}
-					});
-
-			// If ++--START--++ button on expandable tab pressed
-			
-			/*final Button ss_btn;
-			ss_btn = (Button) convertView.findViewById(R.id.st_button);
-
-			ss_btn.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-			
-					removeButtonState = false;
-					removeBtn.setBackgroundResource(R.drawable.buttonshape);
-
-				}
-			});*/
 
 			((TextView) convertView.findViewById(R.id.title)).setText(tpTasks
 					.elementAt(position).getLabel());
 			((TextView) convertView.findViewById(R.id.title2)).setText(tpTasks
 					.elementAt(position).getId());
-
-			// Resets the toolbar to be closed
-			View toolbar = convertView.findViewById(R.id.toolbar);
-			((LinearLayout.LayoutParams) toolbar.getLayoutParams()).bottomMargin = -50;
-			toolbar.setVisibility(View.GONE);
 
 			return convertView;
 		}

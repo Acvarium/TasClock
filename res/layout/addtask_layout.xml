@@ -9,7 +9,7 @@
         android:layout_width="250sp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_margin="15dp"
+        android:layout_margin="10dp"
         android:ems="10"
         android:lines="2"
         android:maxLines="1"
@@ -21,23 +21,26 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
+        android:layout_marginBottom="15dp"
         android:layout_gravity="center_horizontal" >
 
-        <Button
+        <ImageButton
             android:id="@+id/add_ok_button"
-            android:layout_width="80dp"
-            android:layout_height="wrap_content"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_marginRight="5dp"
-            android:background="@drawable/buttonshape"
-            android:text="Add" />
+            android:background="#00ffffff"
+            android:scaleType="fitCenter"
+            android:src="@drawable/wokay" />
 
-        <Button
+        <ImageButton
             android:id="@+id/cansel_button"
-            android:layout_width="80dp"
-            android:layout_height="wrap_content"
-            android:background="@drawable/buttonshape"
-            android:text="Cancel" />
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginLeft="25dp"
+            android:background="#00ffffff"
+            android:scaleType="fitCenter"
+            android:src="@drawable/wrecross" />
     </LinearLayout>
 
 </LinearLayout>

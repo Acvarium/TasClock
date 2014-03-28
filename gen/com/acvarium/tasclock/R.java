@@ -73,29 +73,31 @@ public final class R {
         public static final int task_list_shape=0x7f020028;
         public static final int tools=0x7f020029;
         public static final int urn=0x7f02002a;
+        public static final int wokay=0x7f02002b;
+        public static final int wrecross=0x7f02002c;
     }
     public static final class id {
-        public static final int LinearLayout01=0x7f08000c;
-        public static final int LinearLayout02=0x7f08000f;
-        public static final int add_button=0x7f08000d;
+        public static final int LinearLayout01=0x7f080008;
+        public static final int LinearLayout02=0x7f08000e;
+        public static final int add_button=0x7f08000b;
         public static final int add_ok_button=0x7f080001;
         public static final int bg_view=0x7f080003;
         public static final int cansel_button=0x7f080002;
         public static final int dataTV=0x7f080014;
-        public static final int edit_button=0x7f080009;
+        public static final int edit_button=0x7f080012;
         public static final int etName=0x7f080000;
+        public static final int info_button=0x7f08000c;
         public static final int l1=0x7f080004;
-        public static final int lvMain=0x7f08000b;
-        public static final int mainTV=0x7f080010;
-        public static final int remove_button=0x7f08000e;
-        public static final int reset_button=0x7f080012;
+        public static final int lvMain=0x7f080007;
+        public static final int mainTV=0x7f08000f;
+        public static final int play_button=0x7f08000a;
+        public static final int remove_button=0x7f08000d;
+        public static final int reset_button=0x7f080011;
         public static final int scrollView1=0x7f080013;
-        public static final int st_button1=0x7f08000a;
-        public static final int start_button=0x7f080011;
+        public static final int settings_button=0x7f080009;
+        public static final int start_button=0x7f080010;
         public static final int title=0x7f080005;
         public static final int title2=0x7f080006;
-        public static final int toolbar=0x7f080007;
-        public static final int view_button=0x7f080008;
     }
     public static final class layout {
         public static final int addtask_layout=0x7f030000;
