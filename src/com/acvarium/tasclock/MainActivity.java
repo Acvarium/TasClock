@@ -196,7 +196,7 @@ public class MainActivity extends Activity implements OnClickListener {
 		case R.id.remove_button:
 			Log.d(LOG_TAG, "Removing element " +  sElenetPosition);
 			if (sElenetPosition >= 0) {
-				listAdapter.remove(sElenetPosition);
+				listAdapter.remove(listAdapter.getItem(sElenetPosition));
 				SharedPreferences TimeDataFile;
 				TimeDataFile = getSharedPreferences(
 						tpTasks.elementAt(sElenetPosition).getId(),

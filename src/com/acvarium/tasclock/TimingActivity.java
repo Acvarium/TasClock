@@ -212,7 +212,7 @@ public class TimingActivity extends Activity implements OnClickListener,
 				Log.d(LOG_TAG, "Element = " +  timePeriods.getSumOfPeriod(sElenetPosition));
 				
 				timePeriods.remove(sElenetPosition);
-				listAdapter.remove(sElenetPosition);
+				listAdapter.remove(listAdapter.getItem(sElenetPosition));
 				listAdapter.notifyDataSetChanged();
 				
 
