@@ -1,5 +1,6 @@
 package com.acvarium.tasclock;
 
+import java.util.Random;
 import java.util.Vector;
 
 import android.app.Activity;
@@ -24,7 +25,7 @@ public class MainActivity extends Activity implements OnClickListener {
 	private SharedPreferences sPref;
 	private ImageButton addBtn, removeBtn, editBtn;
 	private ListView list;
-	private ArrayAdapter<String> listAdapter;
+	private ArrayAdapter<Integer> listAdapter;
 	private int tpnum;
 	private Editor ed;
 	private String[] ids;
@@ -74,6 +75,8 @@ public class MainActivity extends Activity implements OnClickListener {
 					int position, long id) {
 				Log.d(LOG_TAG, tpTasks.elementAt(position).getLabel()
 						+ "  Hesh = " + tpTasks.elementAt(position).getId());
+				
+				
 				workTimeAct(tpTasks.elementAt(position).getId());
 				return true;
 			}
@@ -105,7 +108,7 @@ public class MainActivity extends Activity implements OnClickListener {
 			ids[i] = sPref.getString("ids" + i, null);
 			String la = sPref.getString(ids[i] + "_lab", null);
 			tpTasks.add(new tpTask(la, ids[i]));
-			listAdapter.add(la);
+			listAdapter.add(tpTasks.size()-1);
 		}
 	}
 
@@ -118,14 +121,13 @@ public class MainActivity extends Activity implements OnClickListener {
 					.elementAt(i).getLabel());
 			Log.d(LOG_TAG, "ids" + i + " " + tpTasks.elementAt(i).getId());
 		}
-
 		ed.commit();
 	}
 
 	/**
 	 * A simple implementation of list adapter.
 	 */
-	class CustomListAdapter extends ArrayAdapter<String> {
+	class CustomListAdapter extends ArrayAdapter<Integer> {
 
 		public CustomListAdapter(Context context, int textViewResourceId) {
 			super(context, textViewResourceId);
@@ -160,7 +162,6 @@ public class MainActivity extends Activity implements OnClickListener {
 		if (name.length() != 0) {
 			if (editstate) {
 				tpTasks.elementAt(editPosition).setLabel(name);
-				listAdapter.notifyDataSetChanged();
 				// Save changes
 				ed.putString("ids" + editPosition,
 						tpTasks.elementAt(editPosition).getId());
@@ -168,9 +169,13 @@ public class MainActivity extends Activity implements OnClickListener {
 						tpTasks.elementAt(editPosition).getLabel());
 				ed.commit();
 			} else {
+				
+				Random r = new Random();
+				int g = r.nextInt();
+				
 				tpTasks.add(new tpTask(name, Integer.toHexString(name
-						.hashCode())));
-				listAdapter.add(name);
+						.hashCode()+g)));
+				listAdapter.add(tpTasks.size()-1);
 				tpnum = tpTasks.size();
 
 			}
@@ -191,7 +196,7 @@ public class MainActivity extends Activity implements OnClickListener {
 		case R.id.remove_button:
 			Log.d(LOG_TAG, "Removing element " +  sElenetPosition);
 			if (sElenetPosition >= 0) {
-				listAdapter.remove(listAdapter.getItem(sElenetPosition));
+				listAdapter.remove(sElenetPosition);
 				SharedPreferences TimeDataFile;
 				TimeDataFile = getSharedPreferences(
 						tpTasks.elementAt(sElenetPosition).getId(),

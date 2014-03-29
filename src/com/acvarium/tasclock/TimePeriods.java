@@ -3,13 +3,15 @@ package com.acvarium.tasclock;
 import java.util.Vector;
 
 import android.content.SharedPreferences.Editor;
+import android.widget.ArrayAdapter;
 
-public class TimePeriods {
+public class TimePeriods{
 	private Vector<TimePeriod> timePeriods = new Vector<TimePeriod>();
 	private String tpID;
 	public boolean tpStarted;
 	private long sSum = 0L;
 
+	
 	public TimePeriods(String TimePeriodID) {
 		tpID = TimePeriodID;
 		tpStarted = false;

@@ -2,6 +2,7 @@ package com.acvarium.tasclock;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Locale;
 
 import android.app.Activity;
 import android.content.Context;
@@ -10,6 +11,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
@@ -23,11 +25,13 @@ import android.widget.TextView;
 
 public class TimingActivity extends Activity implements OnClickListener,
 		OnLongClickListener {
+	
+	final String LOG_TAG = "myLogs";
 	private ImageButton startBtn, editBtn, resetBtn;
 	private TextView mainTV;
 	private Handler myHandler = new Handler();
 	private ListView list;
-	private ArrayAdapter<String> listAdapter;
+	private ArrayAdapter<Integer> listAdapter;
 	private String tpID = "T1";
 	private TimePeriods timePeriods;
 	private SharedPreferences sPref;
@@ -52,8 +56,8 @@ public class TimingActivity extends Activity implements OnClickListener,
 
 		timePeriods = new TimePeriods(tpID);
 
-		timeFormat = new SimpleDateFormat("hh:mm:ss");
-		dateFormat = new SimpleDateFormat("dd MM yyyy");
+		timeFormat = new SimpleDateFormat("hh:mm:ss", Locale.US);
+		dateFormat = new SimpleDateFormat("dd MM yyyy", Locale.US);
 		cal = Calendar.getInstance();
 		cal.setFirstDayOfWeek(Calendar.MONDAY);
 
@@ -127,13 +131,13 @@ public class TimingActivity extends Activity implements OnClickListener,
 			long startTime = sPref.getLong(String.valueOf(tpID + "_s_" + i), 0);
 			long endTime = sPref.getLong(String.valueOf(tpID + "_e_" + i), 0);
 			timePeriods.add(startTime, endTime);
-			listAdapter.add("");
+			listAdapter.add(timePeriods.getSize() - 1);
 			listAdapter.notifyDataSetChanged();
 
 		}
 	}
 
-	class CustomListAdapter extends ArrayAdapter<String> {
+	class CustomListAdapter extends ArrayAdapter<Integer> {
 
 		public CustomListAdapter(Context context, int textViewResourceId) {
 			super(context, textViewResourceId);
@@ -183,7 +187,7 @@ public class TimingActivity extends Activity implements OnClickListener,
 				startBtn.setImageResource(R.drawable.play);
 				startBtn.setBackgroundResource(R.drawable.buttonshape);
 				myHandler.removeCallbacks(updateTimerMethod);
-				listAdapter.add(String.valueOf(timePeriods.getSize()));
+				listAdapter.add((timePeriods.getSize() - 1));
 				listAdapter.notifyDataSetChanged();
 				showTP();
 
@@ -198,18 +202,23 @@ public class TimingActivity extends Activity implements OnClickListener,
 
 			break;
 		case R.id.edit_button:
+			Log.d(LOG_TAG, "Item " + list.getSelectedItemPosition() + " Selected");
 
 			break;
 		case R.id.reset_button:
-			/*
-			 * if (sElenetPosition >= 0) {
-			 * listAdapter.remove(listAdapter.getItem(sElenetPosition));
-			 * listAdapter.remove(listAdapter.getItem(sElenetPosition));
-			 * listAdapter.notifyDataSetChanged();
-			 * timePeriods.remove(sElenetPosition);
-			 * 
-			 * sElenetPosition = -1; }
-			 */
+
+			if (sElenetPosition >= 0) {
+				Log.d(LOG_TAG, "Rmove item No " +  sElenetPosition);
+				Log.d(LOG_TAG, "Element = " +  timePeriods.getSumOfPeriod(sElenetPosition));
+				
+				timePeriods.remove(sElenetPosition);
+				listAdapter.remove(sElenetPosition);
+				listAdapter.notifyDataSetChanged();
+				
+
+				sElenetPosition = -1;
+			}
+
 			break;
 
 		default:
