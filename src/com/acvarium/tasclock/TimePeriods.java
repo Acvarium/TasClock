@@ -22,6 +22,10 @@ public class TimePeriods {
 	public String getID() {
 		return tpID;
 	}
+	
+	public void remove(int i){
+		timePeriods.remove(i);
+	}
 
 	public void start() {
 		long t = ((System.currentTimeMillis()) / 1000);

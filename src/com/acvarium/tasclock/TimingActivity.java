@@ -1,27 +1,42 @@
 package com.acvarium.tasclock;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.SystemClock;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
+import android.view.View.OnLongClickListener;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
+import android.widget.ListView;
 import android.widget.TextView;
 
-public class TimingActivity extends Activity implements OnClickListener {
-	private long c;
+public class TimingActivity extends Activity implements OnClickListener,
+		OnLongClickListener {
 	private ImageButton startBtn, editBtn, resetBtn;
-	private TextView mainTV, dataTV;
+	private TextView mainTV;
 	private Handler myHandler = new Handler();
+	private ListView list;
+	private ArrayAdapter<String> listAdapter;
 	private String tpID = "T1";
 	private TimePeriods timePeriods;
 	private SharedPreferences sPref;
+	private Calendar cal;
 	private Editor ed;
+	private int sElenetPosition = -1;
+
+	private SimpleDateFormat timeFormat;
+	private SimpleDateFormat dateFormat;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -32,37 +47,74 @@ public class TimingActivity extends Activity implements OnClickListener {
 		Intent intent = getIntent();
 
 		tpID = intent.getStringExtra("name");
-		
+
 		sPref = getSharedPreferences(tpID, Activity.MODE_PRIVATE);
 
 		timePeriods = new TimePeriods(tpID);
+
+		timeFormat = new SimpleDateFormat("hh:mm:ss");
+		dateFormat = new SimpleDateFormat("dd MM yyyy");
+		cal = Calendar.getInstance();
+		cal.setFirstDayOfWeek(Calendar.MONDAY);
 
 		startBtn = (ImageButton) findViewById(R.id.start_button);
 		editBtn = (ImageButton) findViewById(R.id.edit_button);
 		resetBtn = (ImageButton) findViewById(R.id.reset_button);
 		mainTV = (TextView) findViewById(R.id.mainTV);
-		dataTV = (TextView) findViewById(R.id.dataTV);
+
+		list = (ListView) findViewById(R.id.lvTimes);
+
+		// Creating the list adapter and populating the list
+		listAdapter = new CustomListAdapter(this, R.layout.list_time);
 
 		readData();
-		rewriteScreen();
+		list.setAdapter(listAdapter);
 
 		startBtn.setOnClickListener(this);
 		editBtn.setOnClickListener(this);
 		resetBtn.setOnClickListener(this);
+		resetBtn.setOnLongClickListener(this);
+		mainTV.setText(timeToString(timePeriods.getSumOfAllPeriods()));
+
+		list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			public void onItemClick(AdapterView<?> parent, final View view,
+					int position, long id) {
+				sElenetPosition = position;
+
+			}
+		});
+
+		list.setOnItemLongClickListener(new OnItemLongClickListener() {
+
+			public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
+					int position, long id) {
+				return true;
+			}
+		});
+
+	}
+
+	private String timeToString(long time) {
+
+		String ss = String.format("%02d:%02d:%02d", time / 3600,
+				(time % 3600) / 60, (time % 60));
+		return ss;
+	}
+
+	private String perionToString(int period) {
+		long c = timePeriods.getSumOfPeriod(period);
+		return timeToString(c);
 	}
 
 	private Runnable updateTimerMethod = new Runnable() {
 
 		public void run() {
-
-			c = timePeriods.getSumOfAllPeriods();
-			String ss = String.format("%02d:%02d:%02d", c / 3600, (c % 3600) / 60,(c % 60));
-			mainTV.setText(ss);
+			mainTV.setText(timeToString(timePeriods.getSumOfAllPeriods()));
 			myHandler.postDelayed(this, 1000);
 		}
 
 	};
-	
+
 	private void readData() {
 
 		timePeriods.clear();
@@ -71,21 +123,49 @@ public class TimingActivity extends Activity implements OnClickListener {
 			long startTime = sPref.getLong(String.valueOf(tpID + "_s_" + i), 0);
 			long endTime = sPref.getLong(String.valueOf(tpID + "_e_" + i), 0);
 			timePeriods.add(startTime, endTime);
+			listAdapter.add("");
+			listAdapter.notifyDataSetChanged();
+
 		}
 	}
 
-	private void rewriteScreen() {
-		c = timePeriods.getSumOfAllPeriods();
-		String ss = String.format("%02d:%02d:%02d", c / 3600, (c % 3600) / 60,(c % 60));
-		mainTV.setText(ss);
-		ss = "";
-		for (int i = 0; i < timePeriods.getSize(); i++) {
-			c = timePeriods.getSumOfPeriod(i);
-			ss = ss
-					+ String.format("%02d:%02d:%02d", c / 3600,
-							(c % 3600) / 60, (c % 60)) + "\n";
+	class CustomListAdapter extends ArrayAdapter<String> {
+
+		public CustomListAdapter(Context context, int textViewResourceId) {
+			super(context, textViewResourceId);
+
 		}
-		dataTV.setText(ss);
+
+		@Override
+		public View getView(final int position, View convertView,
+				ViewGroup parent) {
+			String ss = "";
+			if (convertView == null) {
+				convertView = getLayoutInflater().inflate(R.layout.list_time,
+						null);
+			}
+			((TextView) convertView.findViewById(R.id.title))
+					.setText(perionToString(position));
+
+			cal.setTimeInMillis(timePeriods.getStartTime(position) * 1000);
+
+			ss = timeFormat.format(cal.getTime());
+			((TextView) convertView.findViewById(R.id.start_time_title))
+					.setText(ss);
+			ss = dateFormat.format(cal.getTime());
+			((TextView) convertView.findViewById(R.id.start_date_title))
+					.setText(ss);
+
+			cal.setTimeInMillis(timePeriods.getEndTime(position) * 1000);
+			ss = timeFormat.format(cal.getTime());
+			((TextView) convertView.findViewById(R.id.end_time_title))
+					.setText(ss);
+			ss = dateFormat.format(cal.getTime());
+			((TextView) convertView.findViewById(R.id.end_date_title))
+					.setText(ss);
+
+			return convertView;
+		}
 	}
 
 	@Override
@@ -96,17 +176,18 @@ public class TimingActivity extends Activity implements OnClickListener {
 			if (timePeriods.tpStarted) { // --STOP---
 
 				timePeriods.stop();
-				rewriteScreen();
 				startBtn.setImageResource(R.drawable.play);
 				startBtn.setBackgroundResource(R.drawable.buttonshape);
 				myHandler.removeCallbacks(updateTimerMethod);
+				listAdapter.add(String.valueOf(timePeriods.getSize()));
+				listAdapter.notifyDataSetChanged();
 
 			} else { // --START---
 
 				timePeriods.start();
 				startBtn.setImageResource(R.drawable.stop);
 				startBtn.setBackgroundResource(R.drawable.stopbuttonshape);
-				myHandler.postDelayed(updateTimerMethod,0);
+				myHandler.postDelayed(updateTimerMethod, 0);
 			}
 
 			break;
@@ -114,11 +195,15 @@ public class TimingActivity extends Activity implements OnClickListener {
 
 			break;
 		case R.id.reset_button:
-			ed = sPref.edit();
-			ed.clear();
-			ed.commit();
-			timePeriods.clear();
-			rewriteScreen();
+			/*
+			 * if (sElenetPosition >= 0) {
+			 * listAdapter.remove(listAdapter.getItem(sElenetPosition));
+			 * listAdapter.remove(listAdapter.getItem(sElenetPosition));
+			 * listAdapter.notifyDataSetChanged();
+			 * timePeriods.remove(sElenetPosition);
+			 * 
+			 * sElenetPosition = -1; }
+			 */
 			break;
 
 		default:
@@ -126,7 +211,26 @@ public class TimingActivity extends Activity implements OnClickListener {
 		}
 
 	}
+	
+	@Override
+	public boolean onLongClick(View v) {
+		switch (v.getId()) {
+		case R.id.reset_button:
 
+			ed = sPref.edit();
+			ed.clear();
+			ed.commit();
+			timePeriods.clear();
+			listAdapter.clear();
+			break;
+
+		default:
+			break;
+		}
+		return false;
+	}
+	
+	
 	@Override
 	protected void onStart() {
 		super.onStart();
@@ -148,7 +252,7 @@ public class TimingActivity extends Activity implements OnClickListener {
 	@Override
 	protected void onStop() {
 		super.onStop();
-		//closeAndSave();
+		// closeAndSave();
 	}
 
 	@Override

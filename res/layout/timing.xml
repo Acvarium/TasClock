@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout 
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" >
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" >
-
     </LinearLayout>
 
     <RelativeLayout
@@ -52,43 +50,28 @@
             android:padding="10dp"
             android:scaleType="fitCenter"
             android:src="@drawable/urn" />
-
     </RelativeLayout>
 
-    <ScrollView
-        android:id="@+id/scrollView1"
+    <ListView
+        android:id="@+id/lvTimes"
         android:layout_width="match_parent"
-        android:layout_height="321dp"
+        android:layout_height="200dp"
         android:layout_above="@+id/LinearLayout01"
         android:layout_below="@+id/LinearLayout02"
-        android:layout_centerHorizontal="true"
-        android:layout_margin="10dp"
-        android:background="@color/selected_task" >
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:orientation="horizontal" >
-
-            <TextView
-                android:id="@+id/dataTV"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="0"
-                android:text="00:00"
-                android:textSize="25dp" />
-        </LinearLayout>
-    </ScrollView>
+        android:layout_margin="5dp"
+        android:layout_weight="2"
+        android:background="@color/selected_task"
+        android:listSelector="@color/selected_task" >
+    </ListView>
 
     <LinearLayout
         android:id="@+id/LinearLayout02"
         android:layout_width="match_parent"
-        android:gravity="center_horizontal"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:background="#D6D6D6"
+        android:gravity="center_horizontal"
         android:orientation="horizontal" >
 
         <TextView
@@ -96,7 +79,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="0"
-            android:text="00:00"
+            android:text="00:00:00"
             android:textSize="@dimen/fontsize" />
-        </LinearLayout>
-    </RelativeLayout>
+    </LinearLayout>
+
+</RelativeLayout>
