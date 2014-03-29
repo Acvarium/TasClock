@@ -15,37 +15,11 @@
         android:text="00:30:10"
         android:textSize="20dp"
         android:textStyle="bold" />
-
+    
+    
+    
     <LinearLayout
         android:id="@+id/start_ll"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_margin="15dp"
-        android:layout_marginBottom="15dp"
-        android:focusable="false"
-        android:focusableInTouchMode="false"
-        android:gravity="left"
-        android:orientation="vertical" >
-
-        <TextView
-            android:id="@+id/start_time_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="15:30:15"
-            android:textSize="18sp" />
-
-        <TextView
-            android:id="@+id/start_date_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="15 березня"
-            android:textSize="10sp" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/end_ll"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
@@ -58,18 +32,45 @@
         android:orientation="vertical" >
 
         <TextView
-            android:id="@+id/end_time_title"
+            android:id="@+id/start_time_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="15:00:05"
             android:textSize="18sp" />
 
         <TextView
-            android:id="@+id/end_date_title"
+            android:id="@+id/start_date_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="15 березня, 2014"
             android:textSize="10sp" />
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/end_ll"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="15dp"
+        android:layout_marginBottom="15dp"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:gravity="left"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/end_time_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="15:30:15"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/end_date_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="15 березня"
+            android:textSize="10sp" />
+    </LinearLayout>
 </RelativeLayout>
