@@ -74,7 +74,7 @@ public class TimingActivity extends Activity implements OnClickListener,
 		editBtn.setOnClickListener(this);
 		resetBtn.setOnClickListener(this);
 		resetBtn.setOnLongClickListener(this);
-		mainTV.setText(timeToString(timePeriods.getSumOfAllPeriods()));
+		showTP();
 
 		list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, final View view,
@@ -94,6 +94,10 @@ public class TimingActivity extends Activity implements OnClickListener,
 
 	}
 
+	private void showTP() {
+		mainTV.setText(timeToString(timePeriods.getSumOfAllPeriods()));
+	}
+
 	private String timeToString(long time) {
 
 		String ss = String.format("%02d:%02d:%02d", time / 3600,
@@ -109,7 +113,7 @@ public class TimingActivity extends Activity implements OnClickListener,
 	private Runnable updateTimerMethod = new Runnable() {
 
 		public void run() {
-			mainTV.setText(timeToString(timePeriods.getSumOfAllPeriods()));
+			showTP();
 			myHandler.postDelayed(this, 1000);
 		}
 
@@ -181,6 +185,7 @@ public class TimingActivity extends Activity implements OnClickListener,
 				myHandler.removeCallbacks(updateTimerMethod);
 				listAdapter.add(String.valueOf(timePeriods.getSize()));
 				listAdapter.notifyDataSetChanged();
+				showTP();
 
 			} else { // --START---
 
@@ -188,6 +193,7 @@ public class TimingActivity extends Activity implements OnClickListener,
 				startBtn.setImageResource(R.drawable.stop);
 				startBtn.setBackgroundResource(R.drawable.stopbuttonshape);
 				myHandler.postDelayed(updateTimerMethod, 0);
+				showTP();
 			}
 
 			break;
@@ -211,7 +217,7 @@ public class TimingActivity extends Activity implements OnClickListener,
 		}
 
 	}
-	
+
 	@Override
 	public boolean onLongClick(View v) {
 		switch (v.getId()) {
@@ -222,6 +228,7 @@ public class TimingActivity extends Activity implements OnClickListener,
 			ed.commit();
 			timePeriods.clear();
 			listAdapter.clear();
+			showTP();
 			break;
 
 		default:
@@ -229,8 +236,7 @@ public class TimingActivity extends Activity implements OnClickListener,
 		}
 		return false;
 	}
-	
-	
+
 	@Override
 	protected void onStart() {
 		super.onStart();
