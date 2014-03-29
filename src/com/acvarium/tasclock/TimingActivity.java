@@ -56,7 +56,7 @@ public class TimingActivity extends Activity implements OnClickListener,
 
 		timePeriods = new TimePeriods(tpID);
 
-		timeFormat = new SimpleDateFormat("hh:mm:ss", Locale.US);
+		timeFormat = new SimpleDateFormat("HH:mm:ss", Locale.US);
 		dateFormat = new SimpleDateFormat("dd MM yyyy", Locale.US);
 		cal = Calendar.getInstance();
 		cal.setFirstDayOfWeek(Calendar.MONDAY);
@@ -104,6 +104,7 @@ public class TimingActivity extends Activity implements OnClickListener,
 
 	private String timeToString(long time) {
 
+		time = time /1000;
 		String ss = String.format("%02d:%02d:%02d", time / 3600,
 				(time % 3600) / 60, (time % 60));
 		return ss;
@@ -155,7 +156,7 @@ public class TimingActivity extends Activity implements OnClickListener,
 			((TextView) convertView.findViewById(R.id.title))
 					.setText(perionToString(position));
 
-			cal.setTimeInMillis(timePeriods.getStartTime(position) * 1000);
+			cal.setTimeInMillis(timePeriods.getStartTime(position));
 
 			ss = timeFormat.format(cal.getTime());
 			((TextView) convertView.findViewById(R.id.start_time_title))
@@ -164,7 +165,7 @@ public class TimingActivity extends Activity implements OnClickListener,
 			((TextView) convertView.findViewById(R.id.start_date_title))
 					.setText(ss);
 
-			cal.setTimeInMillis(timePeriods.getEndTime(position) * 1000);
+			cal.setTimeInMillis(timePeriods.getEndTime(position));
 			ss = timeFormat.format(cal.getTime());
 			((TextView) convertView.findViewById(R.id.end_time_title))
 					.setText(ss);
@@ -214,7 +215,6 @@ public class TimingActivity extends Activity implements OnClickListener,
 				timePeriods.remove(sElenetPosition);
 				listAdapter.remove(listAdapter.getItem(sElenetPosition));
 				listAdapter.notifyDataSetChanged();
-				
 
 				sElenetPosition = -1;
 			}

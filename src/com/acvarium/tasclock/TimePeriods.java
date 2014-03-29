@@ -30,13 +30,13 @@ public class TimePeriods{
 	}
 
 	public void start() {
-		long t = ((System.currentTimeMillis()) / 1000);
+		long t = ((System.currentTimeMillis()));
 		timePeriods.add(new TimePeriod(t, 0));
 		tpStarted = true;
 	}
 
 	public void stop() {
-		long t = ((System.currentTimeMillis()) / 1000);
+		long t = ((System.currentTimeMillis()));
 		timePeriods.lastElement().setEnd(t);
 		tpStarted = false;
 		sSum = getSumOfAllPeriods();
@@ -69,7 +69,7 @@ public class TimePeriods{
 		long sum = 0;
 
 		if (tpStarted) {
-			long lastDuration = ((System.currentTimeMillis()) / 1000)-timePeriods.lastElement().getStart();
+			long lastDuration = ((System.currentTimeMillis()))-timePeriods.lastElement().getStart();
 			sum = sSum + lastDuration;
 		} else {
 			for (TimePeriod p : timePeriods) {
