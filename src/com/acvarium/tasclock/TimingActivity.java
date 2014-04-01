@@ -5,10 +5,14 @@ import java.util.Calendar;
 import java.util.Locale;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -25,20 +29,23 @@ import android.widget.TextView;
 
 public class TimingActivity extends Activity implements OnClickListener,
 		OnLongClickListener {
-	
+
 	final String LOG_TAG = "myLogs";
+	final String NameSTable = "tasks_timing";
 	private ImageButton startBtn, editBtn, resetBtn;
 	private TextView mainTV;
 	private Handler myHandler = new Handler();
 	private ListView list;
-	private ArrayAdapter<Integer> listAdapter;
-	private String tpID = "T1";
+	private ArrayAdapter<TimePeriods> listAdapter;
 	private TimePeriods timePeriods;
 	private SharedPreferences sPref;
 	private Calendar cal;
 	private Editor ed;
 	private String label;
 	private int sElenetPosition = -1;
+
+	private TimingDB timingDB;
+	private SQLiteDatabase tDB;
 
 	private SimpleDateFormat timeFormat;
 	private SimpleDateFormat dateFormat;
@@ -50,16 +57,13 @@ public class TimingActivity extends Activity implements OnClickListener,
 		setContentView(R.layout.timing);
 
 		Intent intent = getIntent();
-		
 		label = intent.getStringExtra("name");
-		tpID = intent.getStringExtra("name");
-		
-		
 		setTitle(label);
 
-		sPref = getSharedPreferences(tpID, Activity.MODE_PRIVATE);
+		timingDB = new TimingDB(this);
+		tDB = timingDB.getWritableDatabase();
 
-		timePeriods = new TimePeriods(tpID);
+		timePeriods = new TimePeriods(label);
 
 		timeFormat = new SimpleDateFormat("HH:mm:ss", Locale.US);
 		dateFormat = new SimpleDateFormat("dd MM yyyy", Locale.US);
@@ -73,16 +77,14 @@ public class TimingActivity extends Activity implements OnClickListener,
 
 		list = (ListView) findViewById(R.id.lvTimes);
 
-		// Creating the list adapter and populating the list
 		listAdapter = new CustomListAdapter(this, R.layout.list_time);
-
-		readData();
 		list.setAdapter(listAdapter);
 
 		startBtn.setOnClickListener(this);
 		editBtn.setOnClickListener(this);
 		resetBtn.setOnClickListener(this);
 		resetBtn.setOnLongClickListener(this);
+		readData();
 		showTP();
 
 		list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -109,7 +111,7 @@ public class TimingActivity extends Activity implements OnClickListener,
 
 	private String timeToString(long time) {
 
-		time = time /1000;
+		time = time / 1000;
 		String ss = String.format("%02d:%02d:%02d", time / 3600,
 				(time % 3600) / 60, (time % 60));
 		return ss;
@@ -129,21 +131,7 @@ public class TimingActivity extends Activity implements OnClickListener,
 
 	};
 
-	private void readData() {
-
-		timePeriods.clear();
-		long tpnum = sPref.getLong("tpnum", 0);
-		for (int i = 0; i < tpnum; i++) {
-			long startTime = sPref.getLong(String.valueOf(tpID + "_s_" + i), 0);
-			long endTime = sPref.getLong(String.valueOf(tpID + "_e_" + i), 0);
-			timePeriods.add(startTime, endTime);
-			listAdapter.add(timePeriods.getSize() - 1);
-			listAdapter.notifyDataSetChanged();
-
-		}
-	}
-
-	class CustomListAdapter extends ArrayAdapter<Integer> {
+	class CustomListAdapter extends ArrayAdapter<TimePeriods> {
 
 		public CustomListAdapter(Context context, int textViewResourceId) {
 			super(context, textViewResourceId);
@@ -161,6 +149,7 @@ public class TimingActivity extends Activity implements OnClickListener,
 			((TextView) convertView.findViewById(R.id.title))
 					.setText(perionToString(position));
 
+			cal.setTimeInMillis(timePeriods.getStartTime(position));
 			cal.setTimeInMillis(timePeriods.getStartTime(position));
 
 			ss = timeFormat.format(cal.getTime());
@@ -182,6 +171,38 @@ public class TimingActivity extends Activity implements OnClickListener,
 		}
 	}
 
+	private void readData() {
+
+		listAdapter.clear();
+		timePeriods.clear();
+		listAdapter.clear();
+		
+		Log.d(LOG_TAG, "--- Read data: ---");
+		
+		// Робимо запрос всіх даинх з таблиці, получаємо Cursor
+		Cursor c = tDB.query(NameSTable, null, "name = ?", new String[] { label }, null, null, null);
+
+		// ставимо позицію курсора на першу строку виборки
+		// якщо в виборці немає строк, то false
+		
+		if (c.moveToFirst()) {
+			// визначаємо номер стовбця по виборці
+			int idColIndex = c.getColumnIndex("id");
+			int nameColIndex = c.getColumnIndex("name");
+			int startColIndex = c.getColumnIndex("start");
+			int endColIndex = c.getColumnIndex("end");
+			do {		
+				timePeriods.add(c.getLong(startColIndex), c.getLong(endColIndex));
+				listAdapter.add(timePeriods);
+			} while (c.moveToNext());
+		} else
+			Log.d(LOG_TAG, "0 rows");
+		c.close();
+		
+		listAdapter.notifyDataSetChanged();
+
+	}
+
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
@@ -193,9 +214,17 @@ public class TimingActivity extends Activity implements OnClickListener,
 				startBtn.setImageResource(R.drawable.play);
 				startBtn.setBackgroundResource(R.drawable.buttonshape);
 				myHandler.removeCallbacks(updateTimerMethod);
-				listAdapter.add((timePeriods.getSize() - 1));
+				listAdapter.add(timePeriods);
 				listAdapter.notifyDataSetChanged();
 				showTP();
+
+				ContentValues cv = new ContentValues();
+				cv.put("name", label);
+				cv.put("start",
+						timePeriods.getStartTime(timePeriods.getSize() - 1));
+				cv.put("end", timePeriods.getEndTime(timePeriods.getSize() - 1));
+				long rowID = tDB.insert(NameSTable, null, cv);
+				Log.d(LOG_TAG, "row inserted, ID = " + rowID);
 
 			} else { // --START---
 
@@ -208,15 +237,45 @@ public class TimingActivity extends Activity implements OnClickListener,
 
 			break;
 		case R.id.edit_button:
-			Log.d(LOG_TAG, "Item " + list.getSelectedItemPosition() + " Selected");
+			Log.d(LOG_TAG, "--- Rows in mytable: ---");
+			// Робимо запрос всіх даинх з таблиці, получаємо Cursor
+			Cursor c = tDB.query(NameSTable, null, null, null, null, null, null);
+		
+			// ставимо позицію курсора на першу строку виборки
+			// якщо в виборці немає строк, то false
+			if (c.moveToFirst()) {
 
+				// визначаємо номер стовбця по виборці
+				int idColIndex = c.getColumnIndex("id");
+				int nameColIndex = c.getColumnIndex("name");
+				int startColIndex = c.getColumnIndex("start");
+				int endColIndex = c.getColumnIndex("end");
+
+				do {
+					// отримуємо значення по номерам стовбців і пишемо все в лог
+					Log.d(LOG_TAG,
+							"ID = " + c.getInt(idColIndex) + ", name = "
+									+ c.getString(nameColIndex) + ", time = "
+									+ c.getLong(startColIndex) + ", comment = "
+									+ c.getLong(endColIndex));
+					// перехід на наступну строку
+					// а якщо наступної нема (поточна остання), то false -
+					// виходимо з циклу
+				} while (c.moveToNext());
+			} else
+				Log.d(LOG_TAG, "0 rows");
+			c.close();
 			break;
 		case R.id.reset_button:
 
 			if (sElenetPosition >= 0) {
-				Log.d(LOG_TAG, "Rmove item No " +  sElenetPosition);
-				Log.d(LOG_TAG, "Element = " +  timePeriods.getSumOfPeriod(sElenetPosition));
-				
+				Log.d(LOG_TAG, "Rmove item No " + sElenetPosition);
+				Log.d(LOG_TAG,
+						"Element = "
+								+ timePeriods.getSumOfPeriod(sElenetPosition));
+				int clearCount = tDB.delete(NameSTable, "start = ?",
+						new String[] { String.valueOf(timePeriods
+								.getStartTime(sElenetPosition)) });
 				timePeriods.remove(sElenetPosition);
 				listAdapter.remove(listAdapter.getItem(sElenetPosition));
 				listAdapter.notifyDataSetChanged();
@@ -237,11 +296,14 @@ public class TimingActivity extends Activity implements OnClickListener,
 		switch (v.getId()) {
 		case R.id.reset_button:
 
-			ed = sPref.edit();
-			ed.clear();
-			ed.commit();
-			timePeriods.clear();
+			Log.d(LOG_TAG, "--- Clear mytable: ---");
+			// Видаляємо всі записи
+			int clearCount = tDB.delete(NameSTable, "name = ?",
+					new String[] { label });
+			Log.d(LOG_TAG, "deleted rows count = " + clearCount);
 			listAdapter.clear();
+			timePeriods.clear();
+			listAdapter.notifyDataSetChanged();
 			showTP();
 			break;
 
@@ -272,13 +334,13 @@ public class TimingActivity extends Activity implements OnClickListener,
 	@Override
 	protected void onStop() {
 		super.onStop();
-		// closeAndSave();
+
 	}
 
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		closeAndSave();
+
 	}
 
 	private void closeAndSave() {
@@ -286,8 +348,26 @@ public class TimingActivity extends Activity implements OnClickListener,
 			timePeriods.stop();
 		}
 		ed = sPref.edit();
-		//timePeriods.saveData(ed);
+		// timePeriods.saveData(ed);
 		ed.commit();
+	}
+
+	// Робота з базою данних
+	class TimingDB extends SQLiteOpenHelper {
+
+		public TimingDB(Context context) {
+			super(context, "db", null, 1);
+		}
+
+		@Override
+		public void onCreate(SQLiteDatabase db) {
+
+		}
+
+		@Override
+		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+
+		}
 	}
 
 }

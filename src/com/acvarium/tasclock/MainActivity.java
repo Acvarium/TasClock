@@ -2,7 +2,6 @@ package com.acvarium.tasclock;
 
 import java.util.Vector;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
@@ -23,7 +22,6 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
-@SuppressLint("NewApi")
 public class MainActivity extends Activity implements OnClickListener,
 		OnLongClickListener {
 	final String LOG_TAG = "myLogs";
@@ -32,10 +30,11 @@ public class MainActivity extends Activity implements OnClickListener,
 	private ArrayAdapter<tpTask> listAdapter;
 	private Vector<tpTask> tpTasks = new Vector<tpTask>();
 	final String NameTable = "tasknames";
+	final String NameSTable = "tasks_timing";
 
 	private int sElenetPosition = -1;
 
-	private DBHelper dbHelper;
+	private NamesDB dbHelper;
 	private SQLiteDatabase db;
 
 	@Override
@@ -45,7 +44,7 @@ public class MainActivity extends Activity implements OnClickListener,
 		//setTitle("sasas");
 		
 
-		dbHelper = new DBHelper(this);
+		dbHelper = new NamesDB(this);
 		db = dbHelper.getWritableDatabase();
 
 		addBtn = (ImageButton) findViewById(R.id.add_button);
@@ -79,12 +78,13 @@ public class MainActivity extends Activity implements OnClickListener,
 			public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
 					int position, long id) {
 				workTimeAct(tpTasks.elementAt(position).getLabel());
+				sElenetPosition = -1;
 				return true;
 			}
 		});
 	}
 
-	private void workTimeAct(String name) {
+	private void workTimeAct(String name) {	
 		Intent intent = new Intent(this, TimingActivity.class);
 		intent.putExtra("name", name);
 		startActivity(intent);
@@ -119,12 +119,8 @@ public class MainActivity extends Activity implements OnClickListener,
 		startActivityForResult(intent, 1);
 	}
 
-	private String[] getDataFromDB() {
-		String[] S = { "1", "2", "3" };
-		return S;
-	}
-
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		Log.d(LOG_TAG, "onActivityResult. Selected = " + sElenetPosition);
 		if (data == null) {
 			return;
 		}
@@ -142,10 +138,13 @@ public class MainActivity extends Activity implements OnClickListener,
 					String ss = listAdapter.getItem(sElenetPosition).getLabel();
 					int updCount = db.update(NameTable, cv, "name = ?",
 							new String[] { ss });
+					ContentValues cvS = new ContentValues();
+					cvS.put("name", name);
+					int updCountS = db.update(NameSTable, cvS, "name = ?",
+							new String[] { ss });
 					Log.d(LOG_TAG, "updated rows count = " + updCount);
 					tpTasks.elementAt(sElenetPosition).setLabel(name);
 				}
-
 			} else {
 				cv.put("name", name);
 				cv.put("sumoftp", 0);
@@ -156,8 +155,10 @@ public class MainActivity extends Activity implements OnClickListener,
 				Log.d(LOG_TAG, "row inserted, ID = " + rowID);
 			}
 		}
+		sElenetPosition = -1;
 		listAdapter.notifyDataSetChanged();
 		cv.clear();
+		Log.d(LOG_TAG, "return from onActivityResult ");
 	}
 
 	private void readData() {
@@ -215,7 +216,6 @@ public class MainActivity extends Activity implements OnClickListener,
 			Log.d(LOG_TAG, "--- Rows in mytable: ---");
 			// Робимо запрос всіх даинх з таблиці, получаємо Cursor
 			Cursor c = db.query(NameTable, null, null, null, null, null, null);
-
 			// ставимо позицію курсора на першу строку виборки
 			// якщо в виборці немає строк, то false
 			if (c.moveToFirst()) {
@@ -286,7 +286,7 @@ public class MainActivity extends Activity implements OnClickListener,
 	@Override
 	protected void onStop() {
 		super.onStop();
-		dbHelper.close();
+		//dbHelper.close();
 	}
 
 	@Override
@@ -295,9 +295,9 @@ public class MainActivity extends Activity implements OnClickListener,
 	}
 
 	// Робота з базою данних
-	class DBHelper extends SQLiteOpenHelper {
+	class NamesDB extends SQLiteOpenHelper {
 
-		public DBHelper(Context context) {
+		public NamesDB(Context context) {
 			// конструктор суперкласу
 			super(context, "db", null, 1);
 		}
@@ -313,11 +313,17 @@ public class MainActivity extends Activity implements OnClickListener,
 			db.execSQL("create table " + NameTable + " ("
 					+ "id integer primary key autoincrement," + "name text,"
 					+ "sumoftp integer," + "comments text" + ");");
+			db.execSQL("create table " + NameSTable + " ("
+					+ "id integer primary key autoincrement," + "name text,"
+					+ "start integer," + "end integer" + ");");
 		}
 
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
+			Log.d(LOG_TAG, "--- onUpdate database ---");
+			db.execSQL("DROP TABLE IF EXISTS " + NameTable);
+			db.execSQL("DROP TABLE IF EXISTS " + NameSTable);
+			onCreate(db);
 		}
 	}
 
