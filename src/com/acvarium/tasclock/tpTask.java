@@ -2,47 +2,39 @@ package com.acvarium.tasclock;
 
 public class tpTask {
 
-	private String tpId,label;
+	private String label;
 	private String comment;
 	private int state;
+	private long period;
 	public TimePeriods timePeriods;
 
-	
-	public tpTask(String label, String tpId){
+	public tpTask(String label, long period) {
 		this.label = label;
-		this.tpId = tpId;
-		timePeriods = new TimePeriods(tpId);
+		timePeriods = new TimePeriods(label);
 		state = 0;
 	}
-	
-	public String generateId(){
-		tpId = Integer.toHexString(label.hashCode());
-		return tpId;
+
+	public void setPeriod(long period) {
+		this.period = period;
 	}
-	
-	public void setLabel(String label){
+
+	public long getPeriod() {
+		return period;
+	}
+
+	public void setLabel(String label) {
 		this.label = label;
 	}
-	
-	public void setID(String tpId){
-		this.tpId = tpId;
-	}
-	
-	public void setComment(String comment){
+
+	public void setComment(String comment) {
 		this.comment = comment;
 	}
-	
-	public void setState(int state){
+
+	public void setState(int state) {
 		this.state = state;
 	}
-	
-	public String getLabel(){
+
+	public String getLabel() {
 		return label;
-		
-	}
-	
-	public String getId(){
-		return tpId;
-		
 	}
 }

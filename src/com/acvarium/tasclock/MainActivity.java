@@ -1,17 +1,20 @@
 package com.acvarium.tasclock;
 
-import java.util.Random;
 import java.util.Vector;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemLongClickListener;
@@ -20,46 +23,48 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class MainActivity extends Activity implements OnClickListener {
+@SuppressLint("NewApi")
+public class MainActivity extends Activity implements OnClickListener,
+		OnLongClickListener {
 	final String LOG_TAG = "myLogs";
-	private SharedPreferences sPref;
-	private ImageButton addBtn, removeBtn, editBtn;
+	private ImageButton addBtn, removeBtn, editBtn, playBtn;
 	private ListView list;
-	private ArrayAdapter<Integer> listAdapter;
-	private int tpnum;
-	private Editor ed;
-	private String[] ids;
-	private int editPosition;
+	private ArrayAdapter<tpTask> listAdapter;
 	private Vector<tpTask> tpTasks = new Vector<tpTask>();
+	final String NameTable = "tasknames";
 
-	private boolean startStop = false;
 	private int sElenetPosition = -1;
+
+	private DBHelper dbHelper;
+	private SQLiteDatabase db;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
-		sPref = getSharedPreferences("main_pref", Activity.MODE_PRIVATE);
-		ed = sPref.edit();
+		//setTitle("sasas");
+		
+
+		dbHelper = new DBHelper(this);
+		db = dbHelper.getWritableDatabase();
 
 		addBtn = (ImageButton) findViewById(R.id.add_button);
 		removeBtn = (ImageButton) findViewById(R.id.remove_button);
 		editBtn = (ImageButton) findViewById(R.id.edit_button);
+		playBtn = (ImageButton) findViewById(R.id.play_button);
 
 		addBtn.setOnClickListener(this);
 		removeBtn.setOnClickListener(this);
 		editBtn.setOnClickListener(this);
+		playBtn.setOnClickListener(this);
+		removeBtn.setOnLongClickListener(this);
 
 		list = (ListView) findViewById(R.id.lvMain);
 
-		// Creating the list adapter and populating the list
 		listAdapter = new CustomListAdapter(this, R.layout.list_item);
-
-		readData();
 		list.setAdapter(listAdapter);
-
-		// Creating an item click listener, to open/close our toolbar for each
-		// item
+		readData();
+		listAdapter.notifyDataSetChanged();
 
 		list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, final View view,
@@ -73,11 +78,7 @@ public class MainActivity extends Activity implements OnClickListener {
 
 			public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
 					int position, long id) {
-				Log.d(LOG_TAG, tpTasks.elementAt(position).getLabel()
-						+ "  Hesh = " + tpTasks.elementAt(position).getId());
-				
-				
-				workTimeAct(tpTasks.elementAt(position).getId());
+				workTimeAct(tpTasks.elementAt(position).getLabel());
 				return true;
 			}
 		});
@@ -86,70 +87,41 @@ public class MainActivity extends Activity implements OnClickListener {
 	private void workTimeAct(String name) {
 		Intent intent = new Intent(this, TimingActivity.class);
 		intent.putExtra("name", name);
-
 		startActivity(intent);
 	}
 
+	class CustomListAdapter extends ArrayAdapter<tpTask> {
+
+		public CustomListAdapter(Context context, int textViewResourceId) {
+			super(context, textViewResourceId);
+		}
+
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+
+			if (convertView == null) {
+				convertView = getLayoutInflater().inflate(R.layout.list_item,
+						null);
+			}
+			TextView label, time;
+			label = (TextView) convertView.findViewById(R.id.title);
+			label.setText(getItem(position).getLabel());
+			time = (TextView) convertView.findViewById(R.id.title2);
+			time.setText(String.valueOf(getItem(position).getPeriod()));
+			return convertView;
+		}
+	}
+
 	private void editLabel(int position) {
-		editPosition = position;
 		Intent intent = new Intent(this, AddTask.class);
 		intent.putExtra("name", tpTasks.elementAt(position).getLabel());
 		intent.putExtra("edit", true);
 		startActivityForResult(intent, 1);
 	}
 
-	private void readData() {
-		listAdapter.clear();
-		tpnum = sPref.getInt("tpnum", 0);
-		tpTasks.clear();
-		ids = new String[tpnum];
-
-		for (int i = 0; i < tpnum; i++) {
-			ids[i] = sPref.getString("ids" + i, null);
-			String la = sPref.getString(ids[i] + "_lab", null);
-			tpTasks.add(new tpTask(la, ids[i]));
-			listAdapter.add(tpTasks.size()-1);
-		}
-	}
-
-	private void saveData() {
-		Log.d(LOG_TAG, "saving data");
-		ed.putInt("tpnum", tpnum);
-		for (int i = 0; i < tpnum; i++) {
-			ed.putString("ids" + i, tpTasks.elementAt(i).getId());
-			ed.putString(tpTasks.elementAt(i).getId() + "_lab", tpTasks
-					.elementAt(i).getLabel());
-			Log.d(LOG_TAG, "ids" + i + " " + tpTasks.elementAt(i).getId());
-		}
-		ed.commit();
-	}
-
-	/**
-	 * A simple implementation of list adapter.
-	 */
-	class CustomListAdapter extends ArrayAdapter<Integer> {
-
-		public CustomListAdapter(Context context, int textViewResourceId) {
-			super(context, textViewResourceId);
-
-		}
-
-		@Override
-		public View getView(final int position, View convertView,
-				ViewGroup parent) {
-
-			if (convertView == null) {
-				convertView = getLayoutInflater().inflate(R.layout.list_item,
-						null);
-			}
-
-			((TextView) convertView.findViewById(R.id.title)).setText(tpTasks
-					.elementAt(position).getLabel());
-			((TextView) convertView.findViewById(R.id.title2)).setText(tpTasks
-					.elementAt(position).getId());
-
-			return convertView;
-		}
+	private String[] getDataFromDB() {
+		String[] S = { "1", "2", "3" };
+		return S;
 	}
 
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -158,29 +130,61 @@ public class MainActivity extends Activity implements OnClickListener {
 		}
 		String name = data.getStringExtra("name");
 		Boolean editstate = data.getBooleanExtra("edit", false);
-
-		if (name.length() != 0) {
+		ContentValues cv = new ContentValues();
+		if (name != null) {
 			if (editstate) {
-				tpTasks.elementAt(editPosition).setLabel(name);
-				// Save changes
-				ed.putString("ids" + editPosition,
-						tpTasks.elementAt(editPosition).getId());
-				ed.putString(tpTasks.elementAt(editPosition).getId() + "_lab",
-						tpTasks.elementAt(editPosition).getLabel());
-				ed.commit();
+				if (sElenetPosition >= 0) {
+					Log.d(LOG_TAG, "--- Update mytabe: ---");
+					// Підготовка значення для обновлення
+					cv.put("name", name);
+					cv.put("sumoftp", 0);
+					cv.put("comments", "");
+					String ss = listAdapter.getItem(sElenetPosition).getLabel();
+					int updCount = db.update(NameTable, cv, "name = ?",
+							new String[] { ss });
+					Log.d(LOG_TAG, "updated rows count = " + updCount);
+					tpTasks.elementAt(sElenetPosition).setLabel(name);
+				}
+
 			} else {
-				
-				Random r = new Random();
-				int g = r.nextInt();
-				
-				tpTasks.add(new tpTask(name, Integer.toHexString(name
-						.hashCode()+g)));
-				listAdapter.add(tpTasks.size()-1);
-				tpnum = tpTasks.size();
-
+				cv.put("name", name);
+				cv.put("sumoftp", 0);
+				cv.put("comments", "");
+				long rowID = db.insert(NameTable, null, cv);
+				tpTasks.add(new tpTask(name, 0));
+				listAdapter.add(tpTasks.lastElement());
+				Log.d(LOG_TAG, "row inserted, ID = " + rowID);
 			}
-
 		}
+		listAdapter.notifyDataSetChanged();
+		cv.clear();
+	}
+
+	private void readData() {
+
+		listAdapter.clear();
+		tpTasks.clear();
+		Log.d(LOG_TAG, "--- Read data: ---");
+		// Робимо запрос всіх даинх з таблиці, получаємо Cursor
+		Cursor c = db.query(NameTable, null, null, null, null, null, null);
+
+		// ставимо позицію курсора на першу строку виборки
+		// якщо в виборці немає строк, то false
+		if (c.moveToFirst()) {
+			// визначаємо номер стовбця по виборці
+			int idColIndex = c.getColumnIndex("id");
+			int nameColIndex = c.getColumnIndex("name");
+			int stColIndex = c.getColumnIndex("sumoftp");
+			int commentColIndex = c.getColumnIndex("comments");
+
+			do {
+				tpTasks.add(new tpTask(c.getString(nameColIndex), c
+						.getLong(stColIndex)));
+				listAdapter.add(tpTasks.lastElement());
+			} while (c.moveToNext());
+		} else
+			Log.d(LOG_TAG, "0 rows");
+		c.close();
 		listAdapter.notifyDataSetChanged();
 
 	}
@@ -194,35 +198,71 @@ public class MainActivity extends Activity implements OnClickListener {
 
 			break;
 		case R.id.remove_button:
-			Log.d(LOG_TAG, "Removing element " +  sElenetPosition);
 			if (sElenetPosition >= 0) {
-				listAdapter.remove(listAdapter.getItem(sElenetPosition));
-				SharedPreferences TimeDataFile;
-				TimeDataFile = getSharedPreferences(
-						tpTasks.elementAt(sElenetPosition).getId(),
-						Activity.MODE_PRIVATE);
-				Editor clearFile = TimeDataFile.edit();
-				clearFile.clear();
-				clearFile.commit();
-				Log.d(LOG_TAG,
-						"Clear data of "
-								+ tpTasks.elementAt(sElenetPosition).getId());
-				tpTasks.remove(sElenetPosition);
-				tpnum = tpTasks.size();
-				saveData();
-				sElenetPosition = -1;
+				int clearCount = db.delete(NameTable, "name = ?",
+						new String[] { tpTasks.elementAt(sElenetPosition)
+								.getLabel() });
+				readData();
 			}
+
 			break;
 		case R.id.edit_button:
 			if (sElenetPosition >= 0) {
 				editLabel(sElenetPosition);
 			}
+			break;
+		case R.id.play_button:
+			Log.d(LOG_TAG, "--- Rows in mytable: ---");
+			// Робимо запрос всіх даинх з таблиці, получаємо Cursor
+			Cursor c = db.query(NameTable, null, null, null, null, null, null);
+
+			// ставимо позицію курсора на першу строку виборки
+			// якщо в виборці немає строк, то false
+			if (c.moveToFirst()) {
+
+				// визначаємо номер стовбця по виборці
+				int idColIndex = c.getColumnIndex("id");
+				int nameColIndex = c.getColumnIndex("name");
+				int stColIndex = c.getColumnIndex("sumoftp");
+				int commentColIndex = c.getColumnIndex("comments");
+
+				do {
+					// отримуємо значення по номерам стовбців і пишемо все в лог
+					Log.d(LOG_TAG,
+							"ID = " + c.getInt(idColIndex) + ", name = "
+									+ c.getString(nameColIndex) + ", time = "
+									+ c.getLong(stColIndex) + ", comment = "
+									+ c.getString(commentColIndex));
+					// перехід на наступну строку
+					// а якщо наступної нема (поточна остання), то false -
+					// виходимо з циклу
+				} while (c.moveToNext());
+			} else
+				Log.d(LOG_TAG, "0 rows");
+			c.close();
 
 			break;
 		default:
 			break;
 		}
+	}
 
+	@Override
+	public boolean onLongClick(View v) {
+		switch (v.getId()) {
+		case R.id.remove_button:
+			Log.d(LOG_TAG, "--- Clear mytable: ---");
+			// Видаляємо всі записи
+			int clearCount = db.delete(NameTable, null, null);
+			Log.d(LOG_TAG, "deleted rows count = " + clearCount);
+			tpTasks.clear();
+			listAdapter.clear();
+			break;
+
+		default:
+			break;
+		}
+		return false;
 	}
 
 	@Override
@@ -246,13 +286,39 @@ public class MainActivity extends Activity implements OnClickListener {
 	@Override
 	protected void onStop() {
 		super.onStop();
-		saveData();
+		dbHelper.close();
 	}
 
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		saveData();
+	}
+
+	// Робота з базою данних
+	class DBHelper extends SQLiteOpenHelper {
+
+		public DBHelper(Context context) {
+			// конструктор суперкласу
+			super(context, "db", null, 1);
+		}
+
+		@Override
+		public void onCreate(SQLiteDatabase db) {
+			Log.d(LOG_TAG, "--- onCreate database ---");
+			// Створюємо таблицю з полями
+			// id - порядковий номер елемента
+			// name - назва завдання
+			// sumoftp - сумарний підрахований час
+			// comments - коментар до завдання
+			db.execSQL("create table " + NameTable + " ("
+					+ "id integer primary key autoincrement," + "name text,"
+					+ "sumoftp integer," + "comments text" + ");");
+		}
+
+		@Override
+		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+
+		}
 	}
 
 }

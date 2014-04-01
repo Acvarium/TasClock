@@ -22,7 +22,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="TimingActivity" android:theme="@style/generalnotitle" android:label="@string/app_name"></activity>
+        <activity android:name="TimingActivity" android:theme="@style/timing" android:label="@string/app_name"></activity>
         <activity android:name="AddTask" android:theme="@android:style/Theme.Dialog"></activity>
     </application>
 

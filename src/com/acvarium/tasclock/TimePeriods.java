@@ -7,22 +7,22 @@ import android.widget.ArrayAdapter;
 
 public class TimePeriods{
 	private Vector<TimePeriod> timePeriods = new Vector<TimePeriod>();
-	private String tpID;
+	private String label;
 	public boolean tpStarted;
 	private long sSum = 0L;
 
 	
-	public TimePeriods(String TimePeriodID) {
-		tpID = TimePeriodID;
+	public TimePeriods(String label) {
+		this.label = label;
 		tpStarted = false;
 	}
 
-	public void setID(String TimePeriodID) {
-		tpID = TimePeriodID;
+	public void setLabel(String label) {
+		this.label = label;
 	}
 
-	public String getID() {
-		return tpID;
+	public String getLabel() {
+		return label;
 	}
 	
 	public void remove(int i){
@@ -30,7 +30,7 @@ public class TimePeriods{
 	}
 
 	public void start() {
-		long t = ((System.currentTimeMillis()));
+		long t = (System.currentTimeMillis());
 		timePeriods.add(new TimePeriod(t, 0));
 		tpStarted = true;
 	}
@@ -84,6 +84,7 @@ public class TimePeriods{
 		return timePeriods.elementAt(i).getDuration();
 	}
 
+	/*
 	public void saveData(Editor ed) {
 		ed.putLong("tpnum", timePeriods.size());
 		ed.putString("tpID", tpID);
@@ -94,6 +95,6 @@ public class TimePeriods{
 			ed.putLong(String.valueOf(tpID + "_e_" + j),
 					timePeriods.elementAt(j).getEnd());
 		}
-	}
+	}*/
 
 }

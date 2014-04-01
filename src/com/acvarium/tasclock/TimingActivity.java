@@ -37,6 +37,7 @@ public class TimingActivity extends Activity implements OnClickListener,
 	private SharedPreferences sPref;
 	private Calendar cal;
 	private Editor ed;
+	private String label;
 	private int sElenetPosition = -1;
 
 	private SimpleDateFormat timeFormat;
@@ -49,8 +50,12 @@ public class TimingActivity extends Activity implements OnClickListener,
 		setContentView(R.layout.timing);
 
 		Intent intent = getIntent();
-
+		
+		label = intent.getStringExtra("name");
 		tpID = intent.getStringExtra("name");
+		
+		
+		setTitle(label);
 
 		sPref = getSharedPreferences(tpID, Activity.MODE_PRIVATE);
 
@@ -281,7 +286,7 @@ public class TimingActivity extends Activity implements OnClickListener,
 			timePeriods.stop();
 		}
 		ed = sPref.edit();
-		timePeriods.saveData(ed);
+		//timePeriods.saveData(ed);
 		ed.commit();
 	}
 
