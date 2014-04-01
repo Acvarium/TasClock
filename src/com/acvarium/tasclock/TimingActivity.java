@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
@@ -43,6 +44,7 @@ public class TimingActivity extends Activity implements OnClickListener,
 	private Editor ed;
 	private String label;
 	private int sElenetPosition = -1;
+	private Intent intent;
 
 	private TimingDB timingDB;
 	private SQLiteDatabase tDB;
@@ -56,7 +58,7 @@ public class TimingActivity extends Activity implements OnClickListener,
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.timing);
 
-		Intent intent = getIntent();
+		intent = getIntent();
 		label = intent.getStringExtra("name");
 		setTitle(label);
 
@@ -110,10 +112,9 @@ public class TimingActivity extends Activity implements OnClickListener,
 	}
 
 	private String timeToString(long time) {
-
 		time = time / 1000;
 		String ss = String.format("%02d:%02d:%02d", time / 3600,
-				(time % 3600) / 60, (time % 60));
+				(time % 3600) / 60, (time % 60), Locale.US);
 		return ss;
 	}
 
@@ -176,29 +177,31 @@ public class TimingActivity extends Activity implements OnClickListener,
 		listAdapter.clear();
 		timePeriods.clear();
 		listAdapter.clear();
-		
+
 		Log.d(LOG_TAG, "--- Read data: ---");
-		
+
 		// Робимо запрос всіх даинх з таблиці, получаємо Cursor
-		Cursor c = tDB.query(NameSTable, null, "name = ?", new String[] { label }, null, null, null);
+		Cursor c = tDB.query(NameSTable, null, "name = ?",
+				new String[] { label }, null, null, null);
 
 		// ставимо позицію курсора на першу строку виборки
 		// якщо в виборці немає строк, то false
-		
+
 		if (c.moveToFirst()) {
 			// визначаємо номер стовбця по виборці
 			int idColIndex = c.getColumnIndex("id");
 			int nameColIndex = c.getColumnIndex("name");
 			int startColIndex = c.getColumnIndex("start");
 			int endColIndex = c.getColumnIndex("end");
-			do {		
-				timePeriods.add(c.getLong(startColIndex), c.getLong(endColIndex));
+			do {
+				timePeriods.add(c.getLong(startColIndex),
+						c.getLong(endColIndex));
 				listAdapter.add(timePeriods);
 			} while (c.moveToNext());
 		} else
 			Log.d(LOG_TAG, "0 rows");
 		c.close();
-		
+
 		listAdapter.notifyDataSetChanged();
 
 	}
@@ -239,8 +242,9 @@ public class TimingActivity extends Activity implements OnClickListener,
 		case R.id.edit_button:
 			Log.d(LOG_TAG, "--- Rows in mytable: ---");
 			// Робимо запрос всіх даинх з таблиці, получаємо Cursor
-			Cursor c = tDB.query(NameSTable, null, null, null, null, null, null);
-		
+			Cursor c = tDB
+					.query(NameSTable, null, null, null, null, null, null);
+
 			// ставимо позицію курсора на першу строку виборки
 			// якщо в виборці немає строк, то false
 			if (c.moveToFirst()) {
@@ -322,34 +326,28 @@ public class TimingActivity extends Activity implements OnClickListener,
 	@Override
 	protected void onPause() {
 		super.onPause();
-
+		Log.d(LOG_TAG, "Pause ");
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
+		Log.d(LOG_TAG, "Resume ");
+		
 
 	}
 
 	@Override
 	protected void onStop() {
 		super.onStop();
+		Log.d(LOG_TAG, "Stop ");
 
 	}
 
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-
-	}
-
-	private void closeAndSave() {
-		if (timePeriods.tpStarted) { // --STOP---
-			timePeriods.stop();
-		}
-		ed = sPref.edit();
-		// timePeriods.saveData(ed);
-		ed.commit();
+		Log.d(LOG_TAG, "onDestroy ");
 	}
 
 	// Робота з базою данних

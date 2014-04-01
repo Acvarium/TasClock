@@ -22,7 +22,7 @@ public class AddTask extends Activity implements OnClickListener {
 		setContentView(R.layout.addtask_layout);
 
 		
-		Intent intent = getIntent();
+		intent = getIntent();
 
 		editState = intent.getBooleanExtra("edit",false);
 		String eName = intent.getStringExtra("name");

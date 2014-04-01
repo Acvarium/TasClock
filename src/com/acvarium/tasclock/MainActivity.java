@@ -1,5 +1,6 @@
 package com.acvarium.tasclock;
 
+import java.util.Locale;
 import java.util.Vector;
 
 import android.app.Activity;
@@ -32,7 +33,7 @@ public class MainActivity extends Activity implements OnClickListener,
 	final String NameTable = "tasknames";
 	final String NameSTable = "tasks_timing";
 
-	private int sElenetPosition = -1;
+	private int sElenetPosition;
 
 	private NamesDB dbHelper;
 	private SQLiteDatabase db;
@@ -41,11 +42,10 @@ public class MainActivity extends Activity implements OnClickListener,
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
-		//setTitle("sasas");
 		
-
 		dbHelper = new NamesDB(this);
 		db = dbHelper.getWritableDatabase();
+		sElenetPosition = -1;
 
 		addBtn = (ImageButton) findViewById(R.id.add_button);
 		removeBtn = (ImageButton) findViewById(R.id.remove_button);
@@ -77,8 +77,8 @@ public class MainActivity extends Activity implements OnClickListener,
 
 			public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
 					int position, long id) {
+				sElenetPosition = position;
 				workTimeAct(tpTasks.elementAt(position).getLabel());
-				sElenetPosition = -1;
 				return true;
 			}
 		});
@@ -87,7 +87,7 @@ public class MainActivity extends Activity implements OnClickListener,
 	private void workTimeAct(String name) {	
 		Intent intent = new Intent(this, TimingActivity.class);
 		intent.putExtra("name", name);
-		startActivity(intent);
+		startActivityForResult(intent,1);
 	}
 
 	class CustomListAdapter extends ArrayAdapter<tpTask> {
@@ -107,7 +107,7 @@ public class MainActivity extends Activity implements OnClickListener,
 			label = (TextView) convertView.findViewById(R.id.title);
 			label.setText(getItem(position).getLabel());
 			time = (TextView) convertView.findViewById(R.id.title2);
-			time.setText(String.valueOf(getItem(position).getPeriod()));
+			time.setText(timeToString(getItem(position).getPeriod()));
 			return convertView;
 		}
 	}
@@ -126,6 +126,7 @@ public class MainActivity extends Activity implements OnClickListener,
 		}
 		String name = data.getStringExtra("name");
 		Boolean editstate = data.getBooleanExtra("edit", false);
+		long time = data.getLongExtra("time", 0);
 		ContentValues cv = new ContentValues();
 		if (name != null) {
 			if (editstate) {
@@ -155,10 +156,21 @@ public class MainActivity extends Activity implements OnClickListener,
 				Log.d(LOG_TAG, "row inserted, ID = " + rowID);
 			}
 		}
+		if(time > 0){
+			Log.d(LOG_TAG, "Rewrote time for element " + sElenetPosition);
+			tpTasks.elementAt(sElenetPosition).setLabel("333");
+		}
 		sElenetPosition = -1;
 		listAdapter.notifyDataSetChanged();
 		cv.clear();
 		Log.d(LOG_TAG, "return from onActivityResult ");
+	}
+	
+	
+	private String timeToString(long time) {
+		time = time / 1000;
+		String ss = String.format("%02d:%02d:%02d", time / 3600,(time % 3600) / 60, (time % 60), Locale.US);
+		return ss;
 	}
 
 	private void readData() {
