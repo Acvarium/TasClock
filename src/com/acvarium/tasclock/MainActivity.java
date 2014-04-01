@@ -203,6 +203,9 @@ public class MainActivity extends Activity implements OnClickListener,
 				int clearCount = db.delete(NameTable, "name = ?",
 						new String[] { tpTasks.elementAt(sElenetPosition)
 								.getLabel() });
+				int clearCountS = db.delete(NameSTable, "name = ?",
+						new String[] { tpTasks.elementAt(sElenetPosition)
+								.getLabel() });
 				readData();
 			}
 
@@ -254,6 +257,8 @@ public class MainActivity extends Activity implements OnClickListener,
 			Log.d(LOG_TAG, "--- Clear mytable: ---");
 			// Видаляємо всі записи
 			int clearCount = db.delete(NameTable, null, null);
+			int clearCountS = db.delete(NameSTable, null, null);
+			
 			Log.d(LOG_TAG, "deleted rows count = " + clearCount);
 			tpTasks.clear();
 			listAdapter.clear();
