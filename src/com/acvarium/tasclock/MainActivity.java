@@ -123,9 +123,19 @@ public class MainActivity extends Activity implements OnClickListener,
 
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		Log.d(LOG_TAG, "onActivityResult. Selected = " + sElenetPosition);
+		
+		String resetLabel = tpTasks.elementAt(sElenetPosition).getLabel();
+		Cursor c = db.query(NameTable, null, "name = ?",new String[] { resetLabel }, null, null, null);
+		if (c.moveToFirst()) {
+			int stColIndex = c.getColumnIndex("sumoftp");
+			tpTasks.elementAt(sElenetPosition).setPeriod(c.getLong(stColIndex));
+		}
+		listAdapter.notifyDataSetChanged();
+		
 		if (data == null) {
 			return;
 		}
+	
 		String name = data.getStringExtra("name");
 		Boolean editstate = data.getBooleanExtra("edit", false);
 		long time = data.getLongExtra("time", 0);
@@ -195,6 +205,7 @@ public class MainActivity extends Activity implements OnClickListener,
 			do {
 				tpTasks.add(new tpTask(c.getString(nameColIndex), c
 						.getLong(stColIndex)));
+				tpTasks.lastElement().setPeriod(c.getLong(stColIndex));
 				listAdapter.add(tpTasks.lastElement());
 			} while (c.moveToNext());
 		} else

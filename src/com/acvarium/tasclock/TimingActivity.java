@@ -28,6 +28,7 @@ import android.widget.TextView;
 public class TimingActivity extends Activity implements OnClickListener,
 		OnLongClickListener {
 
+	final String NameTable = "tasknames";
 	final String LOG_TAG = "myLogs";
 	final String NameSTable = "tasks_timing";
 	private ImageButton startBtn, editBtn, resetBtn;
@@ -105,7 +106,14 @@ public class TimingActivity extends Activity implements OnClickListener,
 	}
 
 	private void showTP() {
-		mainTV.setText(timeToString(timePeriods.getSumOfAllPeriods()));
+		long tpSum = timePeriods.getSumOfAllPeriods();
+		mainTV.setText(timeToString(tpSum));
+		//write change to database--------------------------------------------------------
+		ContentValues cv = new ContentValues();
+		cv.put("sumoftp",tpSum);
+		int clearCount = tDB.update(NameTable, cv,"name = ?",new String[] { label });
+		Log.d(LOG_TAG, " Update sumOfTimePeriods = " + clearCount);
+		//--------------------------------------------------------------------------------
 	}
 
 	private String timeToString(long time) {
@@ -178,13 +186,14 @@ public class TimingActivity extends Activity implements OnClickListener,
 		if (editstate) {
 			long startTime = data.getLongExtra("startTime", timePeriods.getStartTime(sElenetPosition));
 			long endTime = data.getLongExtra("endTime", timePeriods.getEndTime(sElenetPosition));
-			
+	
+			//write change to database--------------------------------------------------------
 			ContentValues cv = new ContentValues();
-
 			cv.put("start",	startTime);
 			cv.put("end", endTime);	
 			int clearCount = tDB.update(NameSTable, cv,"start = ?",new String[] { String.valueOf(timePeriods.getStartTime(sElenetPosition))});
-					
+			//--------------------------------------------------------------------------------
+			
 			timePeriods.setStartTime(sElenetPosition, startTime);
 			timePeriods.setEndTime(sElenetPosition, endTime);
 			listAdapter.notifyDataSetChanged();

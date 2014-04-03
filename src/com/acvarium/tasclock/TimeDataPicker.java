@@ -1,8 +1,6 @@
 package com.acvarium.tasclock;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Locale;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -27,9 +25,7 @@ public class TimeDataPicker extends Activity implements OnClickListener,
 	private ImageButton okBtn;
 	private Intent intent;
 	private Boolean startTimeChanged, endTimeChanged;
-
 	private Calendar cal;
-
 	final String LOG_TAG = "myLogs";
 	private Button timeEditStartBtn, timeEditEndBtn, dateEditStartBtn,
 			dateEditEndBtn;
@@ -42,7 +38,6 @@ public class TimeDataPicker extends Activity implements OnClickListener,
 		endTimeChanged = false;
 
 		long t = (System.currentTimeMillis());
-
 		intent = getIntent();
 		startTime = intent.getLongExtra("startTime", t);
 		endTime = intent.getLongExtra("endTime", t);
@@ -86,24 +81,13 @@ public class TimeDataPicker extends Activity implements OnClickListener,
 		okBtn.setOnClickListener(this);
 
 		cal.setTimeInMillis(startTime);
-
 		timePickerStart.setCurrentHour(cal.get(Calendar.HOUR_OF_DAY));
 		timePickerStart.setCurrentMinute(cal.get(Calendar.MINUTE));
-
-		int year = cal.get(Calendar.YEAR);
-		int month = cal.get(Calendar.MONTH);
-		int day = cal.get(Calendar.DAY_OF_MONTH);
-		
 	    datePickerStart.init(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH), this);
-
-
-		cal.setTimeInMillis(endTime);
-
+	    
+	    cal.setTimeInMillis(endTime);
 		timePickerEnd.setCurrentHour(cal.get(Calendar.HOUR_OF_DAY));
 		timePickerEnd.setCurrentMinute(cal.get(Calendar.MINUTE));
-		year = cal.get(Calendar.YEAR);
-		month = cal.get(Calendar.MONTH);
-		day = cal.get(Calendar.DAY_OF_MONTH);
 	    datePickerEnd.init(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH), this);
 		
 		timePickerStart.setOnTimeChangedListener(this);
@@ -142,7 +126,6 @@ public class TimeDataPicker extends Activity implements OnClickListener,
 		case R.id.ok_button:
 			intent = new Intent();
 			intent.putExtra("edited", true);
-
 			cal.setTimeInMillis(0);
 			if (startTimeChanged) {
 				cal.set(Calendar.HOUR_OF_DAY, timePickerStart.getCurrentHour());
@@ -170,9 +153,8 @@ public class TimeDataPicker extends Activity implements OnClickListener,
 		default:
 			break;
 		}
-
 	}
-
+	
 	@Override
 	public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
 		switch (view.getId()) {
@@ -202,7 +184,5 @@ public class TimeDataPicker extends Activity implements OnClickListener,
 		default:
 			break;
 		}
-
 	}
-
 }
