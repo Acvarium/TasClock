@@ -74,7 +74,7 @@ public final class R {
     }
     public static final class id {
         public static final int LinearLayout01=0x7f08000d;
-        public static final int LinearLayout02=0x7f080024;
+        public static final int LinearLayout02=0x7f080025;
         public static final int add_button=0x7f080010;
         public static final int add_ok_button=0x7f080001;
         public static final int bg_view=0x7f080002;
@@ -92,13 +92,14 @@ public final class R {
         public static final int ll4=0x7f080020;
         public static final int ll5=0x7f080016;
         public static final int lvMain=0x7f08000c;
-        public static final int lvTimes=0x7f080023;
-        public static final int mainTV=0x7f080025;
+        public static final int lvTimes=0x7f080024;
+        public static final int mainTV=0x7f080026;
+        public static final int ok_button=0x7f080021;
         public static final int play_button=0x7f08000f;
         public static final int remove_button=0x7f080012;
-        public static final int reset_button=0x7f080022;
+        public static final int reset_button=0x7f080023;
         public static final int settings_button=0x7f08000e;
-        public static final int start_button=0x7f080021;
+        public static final int start_button=0x7f080022;
         public static final int start_date_title=0x7f080008;
         public static final int start_ll=0x7f080006;
         public static final int start_time_title=0x7f080007;

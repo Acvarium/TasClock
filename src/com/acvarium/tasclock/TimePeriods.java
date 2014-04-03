@@ -57,6 +57,14 @@ public class TimePeriods{
 		return timePeriods.elementAt(j).getEnd();
 	}
 
+	public void setStartTime(int j, long stertTime) {
+		timePeriods.elementAt(j).setStart(stertTime);
+	}
+
+	public void setEndTime(int j, long endTime) {
+		timePeriods.elementAt(j).setEnd(endTime);
+	}
+	
 	public void clear() {
 		timePeriods.clear();
 	}

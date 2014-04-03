@@ -39,9 +39,7 @@ public class TimingActivity extends Activity implements OnClickListener,
 	private ListView list;
 	private ArrayAdapter<TimePeriods> listAdapter;
 	private TimePeriods timePeriods;
-	private SharedPreferences sPref;
 	private Calendar cal;
-	private Editor ed;
 	private String label;
 	private int sElenetPosition = -1;
 	private Intent intent;
@@ -101,6 +99,7 @@ public class TimingActivity extends Activity implements OnClickListener,
 
 			public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
 					int position, long id) {
+				sElenetPosition = position;
 				return true;
 			}
 		});
@@ -171,6 +170,26 @@ public class TimingActivity extends Activity implements OnClickListener,
 			return convertView;
 		}
 	}
+	
+	
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		Log.d(LOG_TAG, "onActivityResult. Selected = " + sElenetPosition);
+		if (data == null) {
+			return;
+		}
+		
+		Boolean editstate = data.getBooleanExtra("edited", false);
+		if(editstate){
+			long startTime = data.getLongExtra("startTime", 0);
+			long endTime = data.getLongExtra("endTime", 0);
+			timePeriods.setStartTime(sElenetPosition, startTime);
+			timePeriods.setEndTime(sElenetPosition, endTime);
+					
+			listAdapter.notifyDataSetChanged();
+		}
+	
+		
+	}
 
 	private void readData() {
 
@@ -240,35 +259,20 @@ public class TimingActivity extends Activity implements OnClickListener,
 
 			break;
 		case R.id.edit_button:
-			Log.d(LOG_TAG, "--- Rows in mytable: ---");
-			// Робимо запрос всіх даинх з таблиці, получаємо Cursor
-			Cursor c = tDB
-					.query(NameSTable, null, null, null, null, null, null);
-
-			// ставимо позицію курсора на першу строку виборки
-			// якщо в виборці немає строк, то false
-			if (c.moveToFirst()) {
-
-				// визначаємо номер стовбця по виборці
-				int idColIndex = c.getColumnIndex("id");
-				int nameColIndex = c.getColumnIndex("name");
-				int startColIndex = c.getColumnIndex("start");
-				int endColIndex = c.getColumnIndex("end");
-
-				do {
-					// отримуємо значення по номерам стовбців і пишемо все в лог
-					Log.d(LOG_TAG,
-							"ID = " + c.getInt(idColIndex) + ", name = "
-									+ c.getString(nameColIndex) + ", time = "
-									+ c.getLong(startColIndex) + ", comment = "
-									+ c.getLong(endColIndex));
-					// перехід на наступну строку
-					// а якщо наступної нема (поточна остання), то false -
-					// виходимо з циклу
-				} while (c.moveToNext());
-			} else
-				Log.d(LOG_TAG, "0 rows");
-			c.close();
+			if (sElenetPosition >= 0) {
+				long startTime = timePeriods.getStartTime(sElenetPosition);
+				long endTime = timePeriods.getEndTime(sElenetPosition);
+				Log.d(LOG_TAG, "--- Edit time ---");
+				Log.d(LOG_TAG,
+						"--- StartTime = "
+								+ startTime
+								+ " EndTime = "
+								+ endTime);
+				Intent intent = new Intent(this, TimeDataPicker.class);
+				intent.putExtra("startTime", startTime);
+				intent.putExtra("endTime", endTime);
+				startActivityForResult(intent,1);
+			}
 			break;
 		case R.id.reset_button:
 
@@ -310,6 +314,37 @@ public class TimingActivity extends Activity implements OnClickListener,
 			listAdapter.notifyDataSetChanged();
 			showTP();
 			break;
+		case R.id.play_button:
+			Log.d(LOG_TAG, "--- Rows in mytable: ---");
+			// Робимо запрос всіх даинх з таблиці, получаємо Cursor
+			Cursor c = tDB
+					.query(NameSTable, null, null, null, null, null, null);
+
+			// ставимо позицію курсора на першу строку виборки
+			// якщо в виборці немає строк, то false
+			if (c.moveToFirst()) {
+
+				// визначаємо номер стовбця по виборці
+				int idColIndex = c.getColumnIndex("id");
+				int nameColIndex = c.getColumnIndex("name");
+				int startColIndex = c.getColumnIndex("start");
+				int endColIndex = c.getColumnIndex("end");
+
+				do {
+					// отримуємо значення по номерам стовбців і пишемо все в лог
+					Log.d(LOG_TAG,
+							"ID = " + c.getInt(idColIndex) + ", name = "
+									+ c.getString(nameColIndex) + ", time = "
+									+ c.getLong(startColIndex) + ", comment = "
+									+ c.getLong(endColIndex));
+					// перехід на наступну строку
+					// а якщо наступної нема (поточна остання), то false -
+					// виходимо з циклу
+				} while (c.moveToNext());
+			} else
+				Log.d(LOG_TAG, "0 rows");
+			c.close();
+			break;
 
 		default:
 			break;
@@ -333,7 +368,6 @@ public class TimingActivity extends Activity implements OnClickListener,
 	protected void onResume() {
 		super.onResume();
 		Log.d(LOG_TAG, "Resume ");
-		
 
 	}
 
