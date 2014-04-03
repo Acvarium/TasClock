@@ -4,13 +4,10 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -100,6 +97,7 @@ public class TimingActivity extends Activity implements OnClickListener,
 			public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
 					int position, long id) {
 				sElenetPosition = position;
+				editTime();
 				return true;
 			}
 		});
@@ -170,25 +168,28 @@ public class TimingActivity extends Activity implements OnClickListener,
 			return convertView;
 		}
 	}
-	
-	
+
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		Log.d(LOG_TAG, "onActivityResult. Selected = " + sElenetPosition);
 		if (data == null) {
 			return;
 		}
-		
 		Boolean editstate = data.getBooleanExtra("edited", false);
-		if(editstate){
-			long startTime = data.getLongExtra("startTime", 0);
-			long endTime = data.getLongExtra("endTime", 0);
+		if (editstate) {
+			long startTime = data.getLongExtra("startTime", timePeriods.getStartTime(sElenetPosition));
+			long endTime = data.getLongExtra("endTime", timePeriods.getEndTime(sElenetPosition));
+			
+			ContentValues cv = new ContentValues();
+
+			cv.put("start",	startTime);
+			cv.put("end", endTime);	
+			int clearCount = tDB.update(NameSTable, cv,"start = ?",new String[] { String.valueOf(timePeriods.getStartTime(sElenetPosition))});
+					
 			timePeriods.setStartTime(sElenetPosition, startTime);
 			timePeriods.setEndTime(sElenetPosition, endTime);
-					
 			listAdapter.notifyDataSetChanged();
+			showTP();
 		}
-	
-		
 	}
 
 	private void readData() {
@@ -222,7 +223,17 @@ public class TimingActivity extends Activity implements OnClickListener,
 		c.close();
 
 		listAdapter.notifyDataSetChanged();
+	}
 
+	private void editTime() {
+		long startTime = timePeriods.getStartTime(sElenetPosition);
+		long endTime = timePeriods.getEndTime(sElenetPosition);
+		Log.d(LOG_TAG, "--- Edit time ---");
+		Log.d(LOG_TAG, "--- StartTime = " + startTime + " EndTime = " + endTime);
+		Intent intent = new Intent(this, TimeDataPicker.class);
+		intent.putExtra("startTime", startTime);
+		intent.putExtra("endTime", endTime);
+		startActivityForResult(intent, 1);
 	}
 
 	@Override
@@ -260,18 +271,7 @@ public class TimingActivity extends Activity implements OnClickListener,
 			break;
 		case R.id.edit_button:
 			if (sElenetPosition >= 0) {
-				long startTime = timePeriods.getStartTime(sElenetPosition);
-				long endTime = timePeriods.getEndTime(sElenetPosition);
-				Log.d(LOG_TAG, "--- Edit time ---");
-				Log.d(LOG_TAG,
-						"--- StartTime = "
-								+ startTime
-								+ " EndTime = "
-								+ endTime);
-				Intent intent = new Intent(this, TimeDataPicker.class);
-				intent.putExtra("startTime", startTime);
-				intent.putExtra("endTime", endTime);
-				startActivityForResult(intent,1);
+				editTime();
 			}
 			break;
 		case R.id.reset_button:
@@ -287,8 +287,8 @@ public class TimingActivity extends Activity implements OnClickListener,
 				timePeriods.remove(sElenetPosition);
 				listAdapter.remove(listAdapter.getItem(sElenetPosition));
 				listAdapter.notifyDataSetChanged();
-
 				sElenetPosition = -1;
+				showTP();
 			}
 
 			break;
