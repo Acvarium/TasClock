@@ -130,7 +130,7 @@ public class MainActivity extends Activity implements OnClickListener,
 		Boolean editstate = data.getBooleanExtra("edit", false);
 		long time = data.getLongExtra("time", 0);
 		ContentValues cv = new ContentValues();
-		if (name != null) {
+		if (name.length() > 0) {
 			if (editstate) {
 				if (sElenetPosition >= 0) {
 					Log.d(LOG_TAG, "--- Update mytabe: ---");
