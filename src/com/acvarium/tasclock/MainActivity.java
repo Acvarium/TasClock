@@ -26,7 +26,7 @@ import android.widget.TextView;
 public class MainActivity extends Activity implements OnClickListener,
 		OnLongClickListener {
 	final String LOG_TAG = "myLogs";
-	private ImageButton addBtn, removeBtn, editBtn, playBtn;
+	private ImageButton addBtn, removeBtn, editBtn, playBtn, settingsBtn;
 	private ListView list;
 	private ArrayAdapter<tpTask> listAdapter;
 	private Vector<tpTask> tpTasks = new Vector<tpTask>();
@@ -51,13 +51,15 @@ public class MainActivity extends Activity implements OnClickListener,
 		removeBtn = (ImageButton) findViewById(R.id.remove_button);
 		editBtn = (ImageButton) findViewById(R.id.edit_button);
 		playBtn = (ImageButton) findViewById(R.id.play_button);
+		settingsBtn = (ImageButton) findViewById(R.id.settings_button);
 
 		addBtn.setOnClickListener(this);
 		removeBtn.setOnClickListener(this);
 		editBtn.setOnClickListener(this);
 		playBtn.setOnClickListener(this);
 		removeBtn.setOnLongClickListener(this);
-
+		settingsBtn.setOnClickListener(this);
+		
 		list = (ListView) findViewById(R.id.lvMain);
 
 		listAdapter = new CustomListAdapter(this, R.layout.list_item);
@@ -208,6 +210,11 @@ public class MainActivity extends Activity implements OnClickListener,
 		case R.id.add_button:
 			Intent intent = new Intent(this, AddTask.class);
 			startActivityForResult(intent, 1);
+
+			break;
+		case R.id.settings_button:
+			Intent intent2 = new Intent(this, TimeDataPicker.class);
+			startActivityForResult(intent2, 1);
 
 			break;
 		case R.id.remove_button:

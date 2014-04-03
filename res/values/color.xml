@@ -7,4 +7,5 @@
     <color name="unselected_task">#00FFFFFF</color>
     <color name="selected_task">#643F89FF</color>
 	<color name="sbcolor">#32FF533F</color>	
+	<color name="white">#FFFFFF</color>	
 </resources>

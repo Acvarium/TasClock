@@ -17,6 +17,7 @@ public final class R {
         public static final int startcolor=0x7f040000;
         public static final int stopcolor=0x7f040001;
         public static final int unselected_task=0x7f040003;
+        public static final int white=0x7f040006;
     }
     public static final class dimen {
         /**  Default screen margins, per the Android Design guidelines. 
@@ -72,32 +73,44 @@ public final class R {
         public static final int wrecross=0x7f020026;
     }
     public static final class id {
-        public static final int LinearLayout01=0x7f08000e;
-        public static final int LinearLayout02=0x7f080018;
-        public static final int add_button=0x7f080011;
+        public static final int LinearLayout01=0x7f08000d;
+        public static final int LinearLayout02=0x7f080024;
+        public static final int add_button=0x7f080010;
         public static final int add_ok_button=0x7f080001;
-        public static final int bg_view=0x7f080003;
-        public static final int cansel_button=0x7f080002;
-        public static final int edit_button=0x7f080012;
-        public static final int end_date_title=0x7f08000c;
-        public static final int end_ll=0x7f08000a;
-        public static final int end_time_title=0x7f08000b;
+        public static final int bg_view=0x7f080002;
+        public static final int datePicker=0x7f08001a;
+        public static final int datePicker2=0x7f08001f;
+        public static final int date_edit_end_button=0x7f08001d;
+        public static final int date_edit_start_button=0x7f080018;
+        public static final int edit_button=0x7f080011;
+        public static final int end_date_title=0x7f08000b;
+        public static final int end_ll=0x7f080009;
+        public static final int end_time_title=0x7f08000a;
         public static final int etName=0x7f080000;
-        public static final int l1=0x7f080004;
-        public static final int lvMain=0x7f08000d;
-        public static final int lvTimes=0x7f080017;
-        public static final int mainTV=0x7f080019;
-        public static final int play_button=0x7f080010;
-        public static final int remove_button=0x7f080013;
-        public static final int reset_button=0x7f080016;
-        public static final int settings_button=0x7f08000f;
-        public static final int start_button=0x7f080015;
-        public static final int start_date_title=0x7f080009;
-        public static final int start_ll=0x7f080007;
-        public static final int start_time_title=0x7f080008;
-        public static final int textView1=0x7f080014;
-        public static final int title=0x7f080005;
-        public static final int title2=0x7f080006;
+        public static final int l1=0x7f080003;
+        public static final int linearLayout1=0x7f080014;
+        public static final int ll4=0x7f080020;
+        public static final int ll5=0x7f080016;
+        public static final int lvMain=0x7f08000c;
+        public static final int lvTimes=0x7f080023;
+        public static final int mainTV=0x7f080025;
+        public static final int play_button=0x7f08000f;
+        public static final int remove_button=0x7f080012;
+        public static final int reset_button=0x7f080022;
+        public static final int settings_button=0x7f08000e;
+        public static final int start_button=0x7f080021;
+        public static final int start_date_title=0x7f080008;
+        public static final int start_ll=0x7f080006;
+        public static final int start_time_title=0x7f080007;
+        public static final int tab1=0x7f080015;
+        public static final int tab2=0x7f08001b;
+        public static final int textView1=0x7f080013;
+        public static final int timePicker=0x7f080019;
+        public static final int timePicker2=0x7f08001e;
+        public static final int time_edit_end_button=0x7f08001c;
+        public static final int time_edit_start_button=0x7f080017;
+        public static final int title=0x7f080004;
+        public static final int title2=0x7f080005;
     }
     public static final class layout {
         public static final int addtask_layout=0x7f030000;
@@ -105,7 +118,8 @@ public final class R {
         public static final int list_time=0x7f030002;
         public static final int main=0x7f030003;
         public static final int my_list_item=0x7f030004;
-        public static final int timing=0x7f030005;
+        public static final int time_picker=0x7f030005;
+        public static final int timing=0x7f030006;
     }
     public static final class string {
         public static final int app_name=0x7f060000;

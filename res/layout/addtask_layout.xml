@@ -26,21 +26,12 @@
 
         <ImageButton
             android:id="@+id/add_ok_button"
-            android:layout_width="50dp"
+            android:layout_width="150dp"
             android:layout_height="50dp"
             android:layout_marginRight="5dp"
             android:background="@drawable/buttonshape"
             android:scaleType="fitCenter"
-            android:src="@drawable/wokay" />
-
-        <ImageButton
-            android:id="@+id/cansel_button"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_marginLeft="25dp"
-            android:background="@drawable/buttonshape"
-            android:scaleType="fitCenter"
-            android:src="@drawable/wrecross" />
+            android:src="@drawable/okay" />
     </LinearLayout>
 
 </LinearLayout>

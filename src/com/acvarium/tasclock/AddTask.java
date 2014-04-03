@@ -13,7 +13,7 @@ import android.widget.ImageButton;
 public class AddTask extends Activity implements OnClickListener {
 
 	private EditText etName;
-	private ImageButton btnOK,cancelBtn;
+	private ImageButton btnOK;
 	private Intent intent;
 	private boolean editState;
 	@Override
@@ -31,8 +31,6 @@ public class AddTask extends Activity implements OnClickListener {
 			etName.setText(eName);
 		}
 		btnOK = (ImageButton) findViewById(R.id.add_ok_button);
-		cancelBtn = (ImageButton)findViewById(R.id.cansel_button);
-		cancelBtn.setOnClickListener(this);
 		btnOK.setOnClickListener(this);
 	}
 
@@ -47,10 +45,7 @@ public class AddTask extends Activity implements OnClickListener {
 			setResult(RESULT_OK, intent);
 			finish();			
 			break;
-		case R.id.cansel_button:	
 
-			finish();
-			break;
 		default:
 			break;
 		}
