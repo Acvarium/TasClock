@@ -121,10 +121,10 @@ public class TimingActivity extends Activity implements OnClickListener,
 			// Log.d(LOG_TAG, " Update sumOfTimePeriods = " + clearCount);
 			// --------------------------------------------------------------------------------
 		}
-		if(timePeriods.getState()){
+		if (timePeriods.getState()) {
 			startBtn.setImageResource(R.drawable.stop);
 			startBtn.setBackgroundResource(R.drawable.stopbuttonshape);
-		}else{
+		} else {
 			startBtn.setImageResource(R.drawable.play);
 			startBtn.setBackgroundResource(R.drawable.buttonshape);
 		}
@@ -163,14 +163,20 @@ public class TimingActivity extends Activity implements OnClickListener,
 		public View getView(final int position, View convertView,
 				ViewGroup parent) {
 			if (convertView == null) {
-				convertView = getLayoutInflater().inflate(R.layout.list_time,null);
+				convertView = getLayoutInflater().inflate(R.layout.list_time,
+						null);
 			}
 			String ss = "";
-			TextView startTimeTV = (TextView) convertView.findViewById(R.id.start_time_title);
-			TextView startDateTV = (TextView) convertView.findViewById(R.id.start_date_title);
-			TextView endTimeTV = (TextView) convertView.findViewById(R.id.end_time_title);
-			TextView endDateTV = (TextView) convertView.findViewById(R.id.end_date_title);
-			TextView timePeriodTV = (TextView) convertView.findViewById(R.id.title);
+			TextView startTimeTV = (TextView) convertView
+					.findViewById(R.id.start_time_title);
+			TextView startDateTV = (TextView) convertView
+					.findViewById(R.id.start_date_title);
+			TextView endTimeTV = (TextView) convertView
+					.findViewById(R.id.end_time_title);
+			TextView endDateTV = (TextView) convertView
+					.findViewById(R.id.end_date_title);
+			TextView timePeriodTV = (TextView) convertView
+					.findViewById(R.id.title);
 
 			cal.setTimeInMillis(timePeriods.getStartTime(position));
 			cal.setTimeInMillis(timePeriods.getStartTime(position));
@@ -278,7 +284,7 @@ public class TimingActivity extends Activity implements OnClickListener,
 				timePeriods.stop();
 				startBtn.setImageResource(R.drawable.play);
 				startBtn.setBackgroundResource(R.drawable.buttonshape);
-				
+
 				ContentValues cv = new ContentValues();
 				cv.put("end", timePeriods.getEndTime(timePeriods.getSize() - 1));
 				int clearCount = tDB.update(NameSTable, cv, "start = ?",
@@ -313,7 +319,7 @@ public class TimingActivity extends Activity implements OnClickListener,
 			break;
 		case R.id.reset_button:
 
-			if (sElenetPosition >= 0) {
+			if ((sElenetPosition >= 0) && (!timePeriods.getState())) {
 				Log.d(LOG_TAG, "Rmove item No " + sElenetPosition);
 				Log.d(LOG_TAG,
 						"Element = "
@@ -340,16 +346,17 @@ public class TimingActivity extends Activity implements OnClickListener,
 	public boolean onLongClick(View v) {
 		switch (v.getId()) {
 		case R.id.reset_button:
-
-			Log.d(LOG_TAG, "--- Clear mytable: ---");
-			// Видаляємо всі записи
-			int clearCount = tDB.delete(NameSTable, "name = ?",
-					new String[] { label });
-			Log.d(LOG_TAG, "deleted rows count = " + clearCount);
-			listAdapter.clear();
-			timePeriods.clear();
-			listAdapter.notifyDataSetChanged();
-			showTP();
+			if (!timePeriods.getState()) {
+				Log.d(LOG_TAG, "--- Clear mytable: ---");
+				// Видаляємо всі записи
+				int clearCount = tDB.delete(NameSTable, "name = ?",
+						new String[] { label });
+				Log.d(LOG_TAG, "deleted rows count = " + clearCount);
+				listAdapter.clear();
+				timePeriods.clear();
+				listAdapter.notifyDataSetChanged();
+				showTP();
+			}
 			break;
 		case R.id.edit_button:
 			Log.d(LOG_TAG, "--- Rows in mytable: ---");
