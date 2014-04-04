@@ -121,6 +121,13 @@ public class TimingActivity extends Activity implements OnClickListener,
 			// Log.d(LOG_TAG, " Update sumOfTimePeriods = " + clearCount);
 			// --------------------------------------------------------------------------------
 		}
+		if(timePeriods.getState()){
+			startBtn.setImageResource(R.drawable.stop);
+			startBtn.setBackgroundResource(R.drawable.stopbuttonshape);
+		}else{
+			startBtn.setImageResource(R.drawable.play);
+			startBtn.setBackgroundResource(R.drawable.buttonshape);
+		}
 		lastSum = tpSum;
 	}
 
@@ -244,8 +251,6 @@ public class TimingActivity extends Activity implements OnClickListener,
 
 		if (timePeriods.getState()) {
 			Log.d(LOG_TAG, "Time is ticking!!!");
-			startBtn.setImageResource(R.drawable.stop);
-			startBtn.setBackgroundResource(R.drawable.stopbuttonshape);
 			myHandler.postDelayed(updateTimerMethod, 0);
 		}
 		listAdapter.notifyDataSetChanged();
