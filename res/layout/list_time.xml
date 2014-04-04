@@ -12,7 +12,7 @@
         android:layout_alignParentTop="true"
         android:layout_margin="15dp"
         android:gravity="right"
-        android:text="00:30:10"
+        android:text="__:__:__"
         android:textSize="20dp"
         android:textStyle="bold" />
     
@@ -35,14 +35,14 @@
             android:id="@+id/start_time_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="15:00:05"
+            android:text="00:00:00"
             android:textSize="18sp" />
 
         <TextView
             android:id="@+id/start_date_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="15 березня, 2014"
+            android:text=""
             android:textSize="10sp" />
     </LinearLayout>
 
@@ -63,14 +63,14 @@
             android:id="@+id/end_time_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="15:30:15"
+            android:text="__:__:__"
             android:textSize="18sp" />
 
         <TextView
             android:id="@+id/end_date_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="15 березня"
+            android:text=""
             android:textSize="10sp" />
     </LinearLayout>
 </RelativeLayout>

@@ -40,6 +40,7 @@ public class TimingActivity extends Activity implements OnClickListener,
 	private Calendar cal;
 	private String label;
 	private int sElenetPosition = -1;
+	private long lastSum;
 	private Intent intent;
 
 	private TimingDB timingDB;
@@ -82,6 +83,8 @@ public class TimingActivity extends Activity implements OnClickListener,
 		editBtn.setOnClickListener(this);
 		resetBtn.setOnClickListener(this);
 		resetBtn.setOnLongClickListener(this);
+		editBtn.setOnLongClickListener(this);
+
 		readData();
 		showTP();
 
@@ -107,13 +110,18 @@ public class TimingActivity extends Activity implements OnClickListener,
 
 	private void showTP() {
 		long tpSum = timePeriods.getSumOfAllPeriods();
-		mainTV.setText(timeToString(tpSum));
-		//write change to database--------------------------------------------------------
-		ContentValues cv = new ContentValues();
-		cv.put("sumoftp",tpSum);
-		int clearCount = tDB.update(NameTable, cv,"name = ?",new String[] { label });
-		Log.d(LOG_TAG, " Update sumOfTimePeriods = " + clearCount);
-		//--------------------------------------------------------------------------------
+		if (lastSum != tpSum) {
+			mainTV.setText(timeToString(tpSum));
+			// write change to
+			// database--------------------------------------------------------
+			ContentValues cv = new ContentValues();
+			cv.put("sumoftp", tpSum);
+			int clearCount = tDB.update(NameTable, cv, "name = ?",
+					new String[] { label });
+			// Log.d(LOG_TAG, " Update sumOfTimePeriods = " + clearCount);
+			// --------------------------------------------------------------------------------
+		}
+		lastSum = tpSum;
 	}
 
 	private String timeToString(long time) {
@@ -147,32 +155,32 @@ public class TimingActivity extends Activity implements OnClickListener,
 		@Override
 		public View getView(final int position, View convertView,
 				ViewGroup parent) {
-			String ss = "";
 			if (convertView == null) {
-				convertView = getLayoutInflater().inflate(R.layout.list_time,
-						null);
+				convertView = getLayoutInflater().inflate(R.layout.list_time,null);
 			}
-			((TextView) convertView.findViewById(R.id.title))
-					.setText(perionToString(position));
+			String ss = "";
+			TextView startTimeTV = (TextView) convertView.findViewById(R.id.start_time_title);
+			TextView startDateTV = (TextView) convertView.findViewById(R.id.start_date_title);
+			TextView endTimeTV = (TextView) convertView.findViewById(R.id.end_time_title);
+			TextView endDateTV = (TextView) convertView.findViewById(R.id.end_date_title);
+			TextView timePeriodTV = (TextView) convertView.findViewById(R.id.title);
 
 			cal.setTimeInMillis(timePeriods.getStartTime(position));
 			cal.setTimeInMillis(timePeriods.getStartTime(position));
 
 			ss = timeFormat.format(cal.getTime());
-			((TextView) convertView.findViewById(R.id.start_time_title))
-					.setText(ss);
+			startTimeTV.setText(ss);
 			ss = dateFormat.format(cal.getTime());
-			((TextView) convertView.findViewById(R.id.start_date_title))
-					.setText(ss);
+			startDateTV.setText(ss);
 
-			cal.setTimeInMillis(timePeriods.getEndTime(position));
-			ss = timeFormat.format(cal.getTime());
-			((TextView) convertView.findViewById(R.id.end_time_title))
-					.setText(ss);
-			ss = dateFormat.format(cal.getTime());
-			((TextView) convertView.findViewById(R.id.end_date_title))
-					.setText(ss);
-
+			if (timePeriods.getEndTime(position) != 0) {
+				cal.setTimeInMillis(timePeriods.getEndTime(position));
+				ss = timeFormat.format(cal.getTime());
+				endTimeTV.setText(ss);
+				ss = dateFormat.format(cal.getTime());
+				endDateTV.setText(ss);
+				timePeriodTV.setText(perionToString(position));
+			}
 			return convertView;
 		}
 	}
@@ -184,16 +192,21 @@ public class TimingActivity extends Activity implements OnClickListener,
 		}
 		Boolean editstate = data.getBooleanExtra("edited", false);
 		if (editstate) {
-			long startTime = data.getLongExtra("startTime", timePeriods.getStartTime(sElenetPosition));
-			long endTime = data.getLongExtra("endTime", timePeriods.getEndTime(sElenetPosition));
-	
-			//write change to database--------------------------------------------------------
+			long startTime = data.getLongExtra("startTime",
+					timePeriods.getStartTime(sElenetPosition));
+			long endTime = data.getLongExtra("endTime",
+					timePeriods.getEndTime(sElenetPosition));
+
+			// write change to
+			// database--------------------------------------------------------
 			ContentValues cv = new ContentValues();
-			cv.put("start",	startTime);
-			cv.put("end", endTime);	
-			int clearCount = tDB.update(NameSTable, cv,"start = ?",new String[] { String.valueOf(timePeriods.getStartTime(sElenetPosition))});
-			//--------------------------------------------------------------------------------
-			
+			cv.put("start", startTime);
+			cv.put("end", endTime);
+			int clearCount = tDB.update(NameSTable, cv, "start = ?",
+					new String[] { String.valueOf(timePeriods
+							.getStartTime(sElenetPosition)) });
+			// --------------------------------------------------------------------------------
+
 			timePeriods.setStartTime(sElenetPosition, startTime);
 			timePeriods.setEndTime(sElenetPosition, endTime);
 			listAdapter.notifyDataSetChanged();
@@ -202,7 +215,6 @@ public class TimingActivity extends Activity implements OnClickListener,
 	}
 
 	private void readData() {
-
 		listAdapter.clear();
 		timePeriods.clear();
 		listAdapter.clear();
@@ -215,7 +227,6 @@ public class TimingActivity extends Activity implements OnClickListener,
 
 		// ставимо позицію курсора на першу строку виборки
 		// якщо в виборці немає строк, то false
-
 		if (c.moveToFirst()) {
 			// визначаємо номер стовбця по виборці
 			int idColIndex = c.getColumnIndex("id");
@@ -231,6 +242,12 @@ public class TimingActivity extends Activity implements OnClickListener,
 			Log.d(LOG_TAG, "0 rows");
 		c.close();
 
+		if (timePeriods.getState()) {
+			Log.d(LOG_TAG, "Time is ticking!!!");
+			startBtn.setImageResource(R.drawable.stop);
+			startBtn.setBackgroundResource(R.drawable.stopbuttonshape);
+			myHandler.postDelayed(updateTimerMethod, 0);
+		}
 		listAdapter.notifyDataSetChanged();
 	}
 
@@ -252,29 +269,33 @@ public class TimingActivity extends Activity implements OnClickListener,
 		switch (v.getId()) {
 		case R.id.start_button:
 
-			if (timePeriods.tpStarted) { // --STOP---
-
+			if (timePeriods.getState()) { // --STOP---
 				timePeriods.stop();
 				startBtn.setImageResource(R.drawable.play);
 				startBtn.setBackgroundResource(R.drawable.buttonshape);
+				
+				ContentValues cv = new ContentValues();
+				cv.put("end", timePeriods.getEndTime(timePeriods.getSize() - 1));
+				int clearCount = tDB.update(NameSTable, cv, "start = ?",
+						new String[] { String.valueOf(timePeriods
+								.getStartTime(timePeriods.getSize() - 1)) });
 				myHandler.removeCallbacks(updateTimerMethod);
-				listAdapter.add(timePeriods);
 				listAdapter.notifyDataSetChanged();
 				showTP();
 
+			} else { // --START---
+				timePeriods.start();
+				startBtn.setImageResource(R.drawable.stop);
+				startBtn.setBackgroundResource(R.drawable.stopbuttonshape);
+				listAdapter.add(timePeriods);
 				ContentValues cv = new ContentValues();
 				cv.put("name", label);
 				cv.put("start",
 						timePeriods.getStartTime(timePeriods.getSize() - 1));
-				cv.put("end", timePeriods.getEndTime(timePeriods.getSize() - 1));
+				cv.put("end", 0);
 				long rowID = tDB.insert(NameSTable, null, cv);
 				Log.d(LOG_TAG, "row inserted, ID = " + rowID);
 
-			} else { // --START---
-
-				timePeriods.start();
-				startBtn.setImageResource(R.drawable.stop);
-				startBtn.setBackgroundResource(R.drawable.stopbuttonshape);
 				myHandler.postDelayed(updateTimerMethod, 0);
 				showTP();
 			}
@@ -325,7 +346,7 @@ public class TimingActivity extends Activity implements OnClickListener,
 			listAdapter.notifyDataSetChanged();
 			showTP();
 			break;
-		case R.id.play_button:
+		case R.id.edit_button:
 			Log.d(LOG_TAG, "--- Rows in mytable: ---");
 			// Робимо запрос всіх даинх з таблиці, получаємо Cursor
 			Cursor c = tDB
@@ -345,8 +366,8 @@ public class TimingActivity extends Activity implements OnClickListener,
 					// отримуємо значення по номерам стовбців і пишемо все в лог
 					Log.d(LOG_TAG,
 							"ID = " + c.getInt(idColIndex) + ", name = "
-									+ c.getString(nameColIndex) + ", time = "
-									+ c.getLong(startColIndex) + ", comment = "
+									+ c.getString(nameColIndex) + ", start = "
+									+ c.getLong(startColIndex) + ", end = "
 									+ c.getLong(endColIndex));
 					// перехід на наступну строку
 					// а якщо наступної нема (поточна остання), то false -
