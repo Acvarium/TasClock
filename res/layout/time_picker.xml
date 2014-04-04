@@ -3,148 +3,216 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <TabHost
-        android:id="@android:id/tabhost"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/linearLayout1" >
+        android:layout_height="match_parent"
+        android:layout_above="@+id/ll4"
+        android:layout_alignParentTop="true"
+        android:orientation="vertical" >
 
-        <LinearLayout
+        <TabHost
+            android:id="@android:id/tabhost"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical" >
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/linearLayout1" >
 
-            <TabWidget
-                android:id="@android:id/tabs"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" >
-            </TabWidget>
+                android:layout_height="match_parent"
+                android:orientation="vertical" >
 
-            <FrameLayout
-                android:id="@android:id/tabcontent"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" >
-
-                <LinearLayout
-                    android:id="@+id/tab1"
+                <TabWidget
+                    android:id="@android:id/tabs"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center_horizontal"
-                    android:orientation="vertical" >
+                    android:layout_height="wrap_content" >
+                </TabWidget>
+
+                <FrameLayout
+                    android:id="@android:id/tabcontent"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" >
 
                     <LinearLayout
-                        android:id="@+id/ll5"
+                        android:id="@+id/tab1"
                         android:layout_width="match_parent"
-                        android:layout_height="30dp"
-                        android:background="#D6D6D6"
-                        android:orientation="horizontal" >
+                        android:layout_height="match_parent"
+                        android:gravity="center_horizontal"
+                        android:orientation="vertical" >
 
-                        <Button
-                            android:id="@+id/time_edit_start_button"
+                        <LinearLayout
+                            android:id="@+id/ll5"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:background="@drawable/buttonshape"
-                            android:text="Time"
-                            android:textColor="@color/white"
-                            android:textStyle="bold" />
+                            android:layout_height="30dp"
+                            android:background="#D6D6D6"
+                            android:orientation="horizontal" >
 
-                        <Button
-                            android:id="@+id/date_edit_start_button"
-                            android:layout_width="match_parent"
+                            <Button
+                                android:id="@+id/time_edit_start_button"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:background="@drawable/buttonshape"
+                                android:text="Time"
+                                android:textColor="@color/white"
+                                android:textStyle="bold" />
+
+                            <Button
+                                android:id="@+id/date_edit_start_button"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:background="@drawable/buttonshape"
+                                android:text="Date"
+                                android:textColor="@color/white"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <TimePicker
+                            android:id="@+id/timePicker"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:background="@drawable/buttonshape"
-                            android:text="Date"
-                            android:textColor="@color/white"
-                            android:textStyle="bold" />
+                            android:layout_marginTop="10dp" />
+
+                        <DatePicker
+                            android:id="@+id/datePicker"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:calendarViewShown="false"
+                            android:visibility="gone" />
                     </LinearLayout>
-
-                    <TimePicker
-                        android:id="@+id/timePicker"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp" />
-
-                    <DatePicker
-                        android:id="@+id/datePicker"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp" 
-                        android:calendarViewShown="false"
-                        android:visibility="gone" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/tab2"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center_horizontal"
-                    android:orientation="vertical" >
 
                     <LinearLayout
-                        android:id="@+id/ll5"
+                        android:id="@+id/tab2"
                         android:layout_width="match_parent"
-                        android:layout_height="30dp"
-                        android:background="#D6D6D6"
-                        android:orientation="horizontal" >
+                        android:layout_height="match_parent"
+                        android:gravity="center_horizontal"
+                        android:orientation="vertical" >
 
-                        <Button
-                            android:id="@+id/time_edit_end_button"
+                        <LinearLayout
+                            android:id="@+id/ll5"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:background="@drawable/buttonshape"
-                            android:text="Time"
-                            android:textColor="@color/white"
-                            android:textStyle="bold" />
+                            android:layout_height="30dp"
+                            android:background="#D6D6D6"
+                            android:orientation="horizontal" >
 
-                        <Button
-                            android:id="@+id/date_edit_end_button"
-                            android:layout_width="match_parent"
+                            <Button
+                                android:id="@+id/time_edit_end_button"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:background="@drawable/buttonshape"
+                                android:text="Time"
+                                android:textColor="@color/white"
+                                android:textStyle="bold" />
+
+                            <Button
+                                android:id="@+id/date_edit_end_button"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:background="@drawable/buttonshape"
+                                android:text="Date"
+                                android:textColor="@color/white"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <TimePicker
+                            android:id="@+id/timePicker2"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:background="@drawable/buttonshape"
-                            android:text="Date"
-                            android:textColor="@color/white"
-                            android:textStyle="bold" />
+                            android:layout_marginTop="10dp" />
+
+                        <DatePicker
+                            android:id="@+id/datePicker2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:calendarViewShown="false"
+                            android:visibility="gone" />
                     </LinearLayout>
-
-                    <TimePicker
-                        android:id="@+id/timePicker2"
-                        android:layout_marginTop="10dp" 
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-
-                    <DatePicker
-                        android:id="@+id/datePicker2"
-                        android:visibility="gone"
-                        android:layout_marginTop="10dp" 
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:calendarViewShown="false" />
-                </LinearLayout>
-            </FrameLayout>
-        </LinearLayout>
-    </TabHost>
+                </FrameLayout>
+            </LinearLayout>
+        </TabHost>
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/ll4"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="25dp"
-        android:layout_weight="1"
-        android:gravity="bottom" >
+        android:orientation="vertical" >
 
         <ImageButton
             android:id="@+id/ok_button"
             android:layout_width="150dp"
             android:layout_height="50dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="15dp"
             android:background="@drawable/buttonshape"
             android:scaleType="fitCenter"
             android:src="@drawable/okay" />
+
+        <RelativeLayout
+            android:id="@+id/RL021"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:background="#D6D6D6" >
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:background="@color/selected_task" >
+
+                <TextView
+                    android:id="@+id/tp_length_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="15dp"
+                    android:gravity="right"
+                    android:text="00:00:00"
+                    android:textSize="20dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_alignBottom="@+id/tp_length_tv"
+                    android:layout_alignParentLeft="true"
+                    android:text="Time period length:"
+                    android:textSize="18dp" />
+
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/total_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="15dp"
+                android:gravity="right"
+                android:text="00:00:00"
+                android:textSize="@dimen/fontsize" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_alignBaseline="@+id/total_tv"
+                android:layout_alignBottom="@+id/textView1"
+                android:layout_alignParentLeft="true"
+                android:text="Total:"
+                android:textSize="20dp" />
+
+        </RelativeLayout>
     </LinearLayout>
 
 </RelativeLayout>

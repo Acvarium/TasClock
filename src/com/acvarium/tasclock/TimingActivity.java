@@ -237,11 +237,13 @@ public class TimingActivity extends Activity implements OnClickListener,
 	private void editTime() {
 		long startTime = timePeriods.getStartTime(sElenetPosition);
 		long endTime = timePeriods.getEndTime(sElenetPosition);
+		long total = timePeriods.getSumOfAllPeriods();
 		Log.d(LOG_TAG, "--- Edit time ---");
 		Log.d(LOG_TAG, "--- StartTime = " + startTime + " EndTime = " + endTime);
 		Intent intent = new Intent(this, TimeDataPicker.class);
 		intent.putExtra("startTime", startTime);
 		intent.putExtra("endTime", endTime);
+		intent.putExtra("total", total);
 		startActivityForResult(intent, 1);
 	}
 

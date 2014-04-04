@@ -1,8 +1,10 @@
 package com.acvarium.tasclock;
 
 import java.util.Calendar;
+import java.util.Locale;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,6 +15,7 @@ import android.widget.DatePicker;
 import android.widget.DatePicker.OnDateChangedListener;
 import android.widget.ImageButton;
 import android.widget.TabHost;
+import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.TimePicker.OnTimeChangedListener;
 
@@ -21,11 +24,14 @@ public class TimeDataPicker extends Activity implements OnClickListener,
 
 	private TimePicker timePickerStart, timePickerEnd;
 	private DatePicker datePickerStart, datePickerEnd;
-	long startTime, endTime;
+	private long startTime, endTime, total, totalM1;
 	private ImageButton okBtn;
 	private Intent intent;
+	private long tpLength;
 	private Boolean startTimeChanged, endTimeChanged;
 	private Calendar cal;
+
+	private TextView tpLengthTV, totalTV;
 	final String LOG_TAG = "myLogs";
 	private Button timeEditStartBtn, timeEditEndBtn, dateEditStartBtn,
 			dateEditEndBtn;
@@ -41,6 +47,8 @@ public class TimeDataPicker extends Activity implements OnClickListener,
 		intent = getIntent();
 		startTime = intent.getLongExtra("startTime", t);
 		endTime = intent.getLongExtra("endTime", t);
+		total = intent.getLongExtra("total", t);
+		totalM1 = total - (endTime - startTime);
 
 		cal = Calendar.getInstance();
 		cal.setFirstDayOfWeek(Calendar.MONDAY);
@@ -56,6 +64,9 @@ public class TimeDataPicker extends Activity implements OnClickListener,
 		spec.setIndicator("End time");
 		tabs.addTab(spec);
 		tabs.setCurrentTab(0);
+		
+		tpLengthTV = (TextView)findViewById(R.id.tp_length_tv);
+		totalTV = (TextView)findViewById(R.id.total_tv);
 
 		datePickerStart = (DatePicker) findViewById(R.id.datePicker);
 		timePickerStart = (TimePicker) findViewById(R.id.timePicker);
@@ -92,6 +103,20 @@ public class TimeDataPicker extends Activity implements OnClickListener,
 		
 		timePickerStart.setOnTimeChangedListener(this);
 		timePickerEnd.setOnTimeChangedListener(this);
+		showTP();
+	}
+	
+	private void showTP() {
+		tpLength = endTime - startTime;
+		tpLengthTV.setText(timeToString(tpLength));
+		totalTV.setText(timeToString(totalM1 + tpLength));
+	}
+	
+	private String timeToString(long time) {
+		time = time / 1000;
+		String ss = String.format("%02d:%02d:%02d", time / 3600,
+				(time % 3600) / 60, (time % 60), Locale.US);
+		return ss;
 	}
 
 	@Override
@@ -128,21 +153,11 @@ public class TimeDataPicker extends Activity implements OnClickListener,
 			intent.putExtra("edited", true);
 			cal.setTimeInMillis(0);
 			if (startTimeChanged) {
-				cal.set(Calendar.HOUR_OF_DAY, timePickerStart.getCurrentHour());
-				cal.set(Calendar.MINUTE, timePickerStart.getCurrentMinute());
-				cal.set(Calendar.YEAR, datePickerStart.getYear());
-				cal.set(Calendar.MONTH, datePickerStart.getMonth());
-				cal.set(Calendar.DAY_OF_MONTH, datePickerStart.getDayOfMonth());
-				startTime = cal.getTimeInMillis();
+				changeStartTime();
 				intent.putExtra("startTime", startTime);
 			}
 			if (endTimeChanged) {
-				cal.set(Calendar.HOUR_OF_DAY, timePickerEnd.getCurrentHour());
-				cal.set(Calendar.MINUTE, timePickerEnd.getCurrentMinute());
-				cal.set(Calendar.YEAR, datePickerEnd.getYear());
-				cal.set(Calendar.MONTH, datePickerEnd.getMonth());
-				cal.set(Calendar.DAY_OF_MONTH, datePickerEnd.getDayOfMonth());
-				endTime = cal.getTimeInMillis();
+				changeEndTime();
 				intent.putExtra("endTime", endTime);
 			}
 			setResult(RESULT_OK, intent);
@@ -155,19 +170,38 @@ public class TimeDataPicker extends Activity implements OnClickListener,
 		}
 	}
 	
+	private void changeStartTime(){
+		cal.set(Calendar.HOUR_OF_DAY, timePickerStart.getCurrentHour());
+		cal.set(Calendar.MINUTE, timePickerStart.getCurrentMinute());
+		cal.set(Calendar.YEAR, datePickerStart.getYear());
+		cal.set(Calendar.MONTH, datePickerStart.getMonth());
+		cal.set(Calendar.DAY_OF_MONTH, datePickerStart.getDayOfMonth());
+		startTime = cal.getTimeInMillis();
+	}
+	private void changeEndTime(){
+		cal.set(Calendar.HOUR_OF_DAY, timePickerEnd.getCurrentHour());
+		cal.set(Calendar.MINUTE, timePickerEnd.getCurrentMinute());
+		cal.set(Calendar.YEAR, datePickerEnd.getYear());
+		cal.set(Calendar.MONTH, datePickerEnd.getMonth());
+		cal.set(Calendar.DAY_OF_MONTH, datePickerEnd.getDayOfMonth());
+		endTime = cal.getTimeInMillis();
+	}
 	@Override
 	public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
 		switch (view.getId()) {
 		case R.id.timePicker:
+			changeStartTime();
 			startTimeChanged = true;
 			break;
 		case R.id.timePicker2:
+			changeEndTime();
 			endTimeChanged = true;
 			break;
 
 		default:
 			break;
 		}
+		showTP();
 	}
 
 	@Override
@@ -175,14 +209,17 @@ public class TimeDataPicker extends Activity implements OnClickListener,
 			int dayOfMonth) {
 		switch (view.getId()) {
 		case R.id.datePicker:
+			changeStartTime();
 			startTimeChanged = true;
 			break;
 		case R.id.datePicker2:
+			changeEndTime();
 			endTimeChanged = true;
 			break;
 
 		default:
 			break;
 		}
+		showTP();
 	}
 }
