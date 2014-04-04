@@ -42,7 +42,7 @@ public class MainActivity extends Activity implements OnClickListener,
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
-		
+
 		dbHelper = new NamesDB(this);
 		db = dbHelper.getWritableDatabase();
 		sElenetPosition = -1;
@@ -59,7 +59,7 @@ public class MainActivity extends Activity implements OnClickListener,
 		playBtn.setOnClickListener(this);
 		removeBtn.setOnLongClickListener(this);
 		settingsBtn.setOnClickListener(this);
-		
+
 		list = (ListView) findViewById(R.id.lvMain);
 
 		listAdapter = new CustomListAdapter(this, R.layout.list_item);
@@ -86,10 +86,10 @@ public class MainActivity extends Activity implements OnClickListener,
 		});
 	}
 
-	private void workTimeAct(String name) {	
+	private void workTimeAct(String name) {
 		Intent intent = new Intent(this, TimingActivity.class);
 		intent.putExtra("name", name);
-		startActivityForResult(intent,1);
+		startActivityForResult(intent, 1);
 	}
 
 	class CustomListAdapter extends ArrayAdapter<tpTask> {
@@ -123,19 +123,22 @@ public class MainActivity extends Activity implements OnClickListener,
 
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		Log.d(LOG_TAG, "onActivityResult. Selected = " + sElenetPosition);
-		
-		String resetLabel = tpTasks.elementAt(sElenetPosition).getLabel();
-		Cursor c = db.query(NameTable, null, "name = ?",new String[] { resetLabel }, null, null, null);
-		if (c.moveToFirst()) {
-			int stColIndex = c.getColumnIndex("sumoftp");
-			tpTasks.elementAt(sElenetPosition).setPeriod(c.getLong(stColIndex));
+		if (sElenetPosition >= 0) {
+			String resetLabel = tpTasks.elementAt(sElenetPosition).getLabel();
+			Cursor c = db.query(NameTable, null, "name = ?",
+					new String[] { resetLabel }, null, null, null);
+			if (c.moveToFirst()) {
+				int stColIndex = c.getColumnIndex("sumoftp");
+				tpTasks.elementAt(sElenetPosition).setPeriod(
+						c.getLong(stColIndex));
+			}
+			listAdapter.notifyDataSetChanged();
 		}
-		listAdapter.notifyDataSetChanged();
-		
+
 		if (data == null) {
 			return;
 		}
-	
+
 		String name = data.getStringExtra("name");
 		Boolean editstate = data.getBooleanExtra("edit", false);
 		long time = data.getLongExtra("time", 0);
@@ -168,7 +171,7 @@ public class MainActivity extends Activity implements OnClickListener,
 				Log.d(LOG_TAG, "row inserted, ID = " + rowID);
 			}
 		}
-		if(time > 0){
+		if (time > 0) {
 			Log.d(LOG_TAG, "Rewrote time for element " + sElenetPosition);
 			tpTasks.elementAt(sElenetPosition).setLabel("333");
 		}
@@ -177,11 +180,11 @@ public class MainActivity extends Activity implements OnClickListener,
 		cv.clear();
 		Log.d(LOG_TAG, "return from onActivityResult ");
 	}
-	
-	
+
 	private String timeToString(long time) {
 		time = time / 1000;
-		String ss = String.format("%02d:%02d:%02d", time / 3600,(time % 3600) / 60, (time % 60), Locale.US);
+		String ss = String.format("%02d:%02d:%02d", time / 3600,
+				(time % 3600) / 60, (time % 60), Locale.US);
 		return ss;
 	}
 
@@ -288,7 +291,7 @@ public class MainActivity extends Activity implements OnClickListener,
 			// Видаляємо всі записи
 			int clearCount = db.delete(NameTable, null, null);
 			int clearCountS = db.delete(NameSTable, null, null);
-			
+
 			Log.d(LOG_TAG, "deleted rows count = " + clearCount);
 			tpTasks.clear();
 			listAdapter.clear();
@@ -321,7 +324,7 @@ public class MainActivity extends Activity implements OnClickListener,
 	@Override
 	protected void onStop() {
 		super.onStop();
-		//dbHelper.close();
+		// dbHelper.close();
 	}
 
 	@Override
