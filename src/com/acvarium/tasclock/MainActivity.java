@@ -32,10 +32,9 @@ public class MainActivity extends Activity implements OnClickListener,
 	private Vector<tpTask> tpTasks = new Vector<tpTask>();
 	final String NameTable = "tasknames";
 	final String NameSTable = "tasks_timing";
-
 	private int sElenetPosition;
 
-	private NamesDB dbHelper;
+	private TimesDB timesDB;
 	private SQLiteDatabase db;
 
 	@Override
@@ -43,8 +42,10 @@ public class MainActivity extends Activity implements OnClickListener,
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
-		dbHelper = new NamesDB(this);
-		db = dbHelper.getWritableDatabase();
+		timesDB = new TimesDB(this);
+		db = timesDB.getWritableDatabase();
+		Log.d(LOG_TAG, "Database version " + db.getVersion());
+		
 		sElenetPosition = -1;
 
 		addBtn = (ImageButton) findViewById(R.id.add_button);
@@ -138,7 +139,6 @@ public class MainActivity extends Activity implements OnClickListener,
 		if (data == null) {
 			return;
 		}
-
 		String name = data.getStringExtra("name");
 		Boolean editstate = data.getBooleanExtra("edit", false);
 		long time = data.getLongExtra("time", 0);
@@ -296,73 +296,10 @@ public class MainActivity extends Activity implements OnClickListener,
 			tpTasks.clear();
 			listAdapter.clear();
 			break;
-
 		default:
 			break;
 		}
 		return false;
-	}
-
-	@Override
-	protected void onStart() {
-		super.onStart();
-
-	}
-
-	@Override
-	protected void onPause() {
-		super.onPause();
-
-	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
-
-	}
-
-	@Override
-	protected void onStop() {
-		super.onStop();
-		// dbHelper.close();
-	}
-
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-	}
-
-	// Робота з базою данних
-	class NamesDB extends SQLiteOpenHelper {
-
-		public NamesDB(Context context) {
-			// конструктор суперкласу
-			super(context, "db", null, 1);
-		}
-
-		@Override
-		public void onCreate(SQLiteDatabase db) {
-			Log.d(LOG_TAG, "--- onCreate database ---");
-			// Створюємо таблицю з полями
-			// id - порядковий номер елемента
-			// name - назва завдання
-			// sumoftp - сумарний підрахований час
-			// comments - коментар до завдання
-			db.execSQL("create table " + NameTable + " ("
-					+ "id integer primary key autoincrement," + "name text,"
-					+ "sumoftp integer," + "comments text" + ");");
-			db.execSQL("create table " + NameSTable + " ("
-					+ "id integer primary key autoincrement," + "name text,"
-					+ "start integer," + "end integer" + ");");
-		}
-
-		@Override
-		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-			Log.d(LOG_TAG, "--- onUpdate database ---");
-			db.execSQL("DROP TABLE IF EXISTS " + NameTable);
-			db.execSQL("DROP TABLE IF EXISTS " + NameSTable);
-			onCreate(db);
-		}
 	}
 
 }

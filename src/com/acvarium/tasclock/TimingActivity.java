@@ -43,7 +43,7 @@ public class TimingActivity extends Activity implements OnClickListener,
 	private long lastSum;
 	private Intent intent;
 
-	private TimingDB timingDB;
+	private TimesDB timingDB;
 	private SQLiteDatabase tDB;
 
 	private SimpleDateFormat timeFormat;
@@ -59,7 +59,7 @@ public class TimingActivity extends Activity implements OnClickListener,
 		label = intent.getStringExtra("name");
 		setTitle(label);
 
-		timingDB = new TimingDB(this);
+		timingDB = new TimesDB(this);
 		tDB = timingDB.getWritableDatabase();
 
 		timePeriods = new TimePeriods(label);
@@ -426,24 +426,6 @@ public class TimingActivity extends Activity implements OnClickListener,
 	protected void onDestroy() {
 		super.onDestroy();
 		Log.d(LOG_TAG, "onDestroy ");
-	}
-
-	// Робота з базою данних
-	class TimingDB extends SQLiteOpenHelper {
-
-		public TimingDB(Context context) {
-			super(context, "db", null, 1);
-		}
-
-		@Override
-		public void onCreate(SQLiteDatabase db) {
-
-		}
-
-		@Override
-		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
-		}
 	}
 
 }
