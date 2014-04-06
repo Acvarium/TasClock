@@ -24,7 +24,14 @@ public class TimePeriod {
 	}	
 	
 	public long getDuration(){
-		return end-start;
+		long duration = 0;
+		if(end == 0){
+			duration = System.currentTimeMillis() - start;
+		}else{
+			duration = end - start;
+		}
+		
+		return duration;
 		
 	}
 }

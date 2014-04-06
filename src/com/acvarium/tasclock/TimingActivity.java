@@ -112,14 +112,6 @@ public class TimingActivity extends Activity implements OnClickListener,
 		long tpSum = timePeriods.getSumOfAllPeriods();
 		if (lastSum != tpSum) {
 			mainTV.setText(timeToString(tpSum));
-			// write change to
-			// database--------------------------------------------------------
-			ContentValues cv = new ContentValues();
-			cv.put("sumoftp", tpSum);
-			int clearCount = tDB.update(NameTable, cv, "name = ?",
-					new String[] { label });
-			// Log.d(LOG_TAG, " Update sumOfTimePeriods = " + clearCount);
-			// --------------------------------------------------------------------------------
 		}
 		if (timePeriods.getState()) {
 			startBtn.setImageResource(R.drawable.stop);
@@ -205,11 +197,11 @@ public class TimingActivity extends Activity implements OnClickListener,
 		}
 		Boolean editstate = data.getBooleanExtra("edited", false);
 		if (editstate) {
+			
 			long startTime = data.getLongExtra("startTime",
 					timePeriods.getStartTime(sElenetPosition));
 			long endTime = data.getLongExtra("endTime",
 					timePeriods.getEndTime(sElenetPosition));
-
 			// write change to
 			// database--------------------------------------------------------
 			ContentValues cv = new ContentValues();
@@ -218,13 +210,34 @@ public class TimingActivity extends Activity implements OnClickListener,
 			int clearCount = tDB.update(NameSTable, cv, "start = ?",
 					new String[] { String.valueOf(timePeriods
 							.getStartTime(sElenetPosition)) });
+			
+			cv.clear();
 			// --------------------------------------------------------------------------------
 
 			timePeriods.setStartTime(sElenetPosition, startTime);
 			timePeriods.setEndTime(sElenetPosition, endTime);
 			listAdapter.notifyDataSetChanged();
 			showTP();
+			writeToMasterTable();
 		}
+	}
+	
+	private void writeToMasterTable(){
+		Log.d(LOG_TAG, "--- write To Master Table ---");
+		ContentValues cv = new ContentValues();
+		if(timePeriods.getState()){
+			cv.put("sumoftp", timePeriods.getSumOfStatedPeriods());
+			cv.put("status", timePeriods.getStartTime(timePeriods.getLast()));
+			int we = tDB.update(NameTable, cv, "name = ?",new String[] { label });
+			Log.d(LOG_TAG, "Update status = " + we);
+		}else{
+			cv.put("sumoftp", timePeriods.getSumOfAllPeriods());
+			cv.put("status", 0);
+			int we = tDB.update(NameTable, cv, "name = ?",new String[] { label });			
+			Log.d(LOG_TAG, "Update status = " + we);
+			
+		}
+		cv.clear();
 	}
 
 	private void readData() {
@@ -286,10 +299,13 @@ public class TimingActivity extends Activity implements OnClickListener,
 				startBtn.setBackgroundResource(R.drawable.buttonshape);
 
 				ContentValues cv = new ContentValues();
-				cv.put("end", timePeriods.getEndTime(timePeriods.getSize() - 1));
-				int clearCount = tDB.update(NameSTable, cv, "start = ?",
+				cv.put("end", timePeriods.getEndTime(timePeriods.getLast()));
+				tDB.update(NameSTable, cv, "start = ?",
 						new String[] { String.valueOf(timePeriods
-								.getStartTime(timePeriods.getSize() - 1)) });
+								.getStartTime(timePeriods.getLast())) });
+				cv.clear();
+
+				writeToMasterTable();
 				myHandler.removeCallbacks(updateTimerMethod);
 				listAdapter.notifyDataSetChanged();
 				showTP();
@@ -302,11 +318,13 @@ public class TimingActivity extends Activity implements OnClickListener,
 				ContentValues cv = new ContentValues();
 				cv.put("name", label);
 				cv.put("start",
-						timePeriods.getStartTime(timePeriods.getSize() - 1));
+						timePeriods.getStartTime(timePeriods.getLast()));
 				cv.put("end", 0);
 				long rowID = tDB.insert(NameSTable, null, cv);
 				Log.d(LOG_TAG, "row inserted, ID = " + rowID);
+				cv.clear();
 
+				writeToMasterTable();
 				myHandler.postDelayed(updateTimerMethod, 0);
 				showTP();
 			}
@@ -331,6 +349,7 @@ public class TimingActivity extends Activity implements OnClickListener,
 				listAdapter.remove(listAdapter.getItem(sElenetPosition));
 				listAdapter.notifyDataSetChanged();
 				sElenetPosition = -1;
+				writeToMasterTable();
 				showTP();
 			}
 
@@ -355,6 +374,7 @@ public class TimingActivity extends Activity implements OnClickListener,
 				listAdapter.clear();
 				timePeriods.clear();
 				listAdapter.notifyDataSetChanged();
+				writeToMasterTable();
 				showTP();
 			}
 			break;

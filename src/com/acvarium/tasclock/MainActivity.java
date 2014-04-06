@@ -9,8 +9,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -20,6 +20,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -33,7 +34,7 @@ public class MainActivity extends Activity implements OnClickListener,
 	final String NameTable = "tasknames";
 	final String NameSTable = "tasks_timing";
 	private int sElenetPosition;
-
+	private Handler myHandler = new Handler();
 	private TimesDB timesDB;
 	private SQLiteDatabase db;
 
@@ -66,6 +67,7 @@ public class MainActivity extends Activity implements OnClickListener,
 		listAdapter = new CustomListAdapter(this, R.layout.list_item);
 		list.setAdapter(listAdapter);
 		readData();
+		myHandler.postDelayed(updateTimerMethod, 0);
 		listAdapter.notifyDataSetChanged();
 
 		list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -107,13 +109,34 @@ public class MainActivity extends Activity implements OnClickListener,
 						null);
 			}
 			TextView label, time;
+			LinearLayout bg_view;
+			
 			label = (TextView) convertView.findViewById(R.id.title);
 			label.setText(getItem(position).getLabel());
 			time = (TextView) convertView.findViewById(R.id.title2);
-			time.setText(timeToString(getItem(position).getPeriod()));
+			
+			bg_view = (LinearLayout)convertView.findViewById(R.id.bg_view);
+			if(getItem(position).getStatus() > 1000){
+				bg_view.setBackgroundResource(R.color.sbcolor);
+				long t = getItem(position).getPeriod() + (System.currentTimeMillis() - getItem(position).getStatus());
+				time.setText(timeToString(t));
+			}else{
+				bg_view.setBackgroundResource(R.color.unselected_task);
+				time.setText(timeToString(getItem(position).getPeriod()));		
+			}
 			return convertView;
 		}
 	}
+	
+	
+	private Runnable updateTimerMethod = new Runnable() {
+
+		public void run() {
+			listAdapter.notifyDataSetChanged();
+			myHandler.postDelayed(this, 1000);
+		}
+
+	};
 
 	private void editLabel(int position) {
 		Intent intent = new Intent(this, AddTask.class);
@@ -130,8 +153,10 @@ public class MainActivity extends Activity implements OnClickListener,
 					new String[] { resetLabel }, null, null, null);
 			if (c.moveToFirst()) {
 				int stColIndex = c.getColumnIndex("sumoftp");
-				tpTasks.elementAt(sElenetPosition).setPeriod(
-						c.getLong(stColIndex));
+				int statusColIndex = c.getColumnIndex("status");
+				tpTasks.elementAt(sElenetPosition).setPeriod(c.getLong(stColIndex));
+				tpTasks.elementAt(sElenetPosition).setStatus(c.getLong(statusColIndex));
+				c.close();
 			}
 			listAdapter.notifyDataSetChanged();
 		}
@@ -189,7 +214,6 @@ public class MainActivity extends Activity implements OnClickListener,
 	}
 
 	private void readData() {
-
 		listAdapter.clear();
 		tpTasks.clear();
 		Log.d(LOG_TAG, "--- Read data: ---");
@@ -203,12 +227,13 @@ public class MainActivity extends Activity implements OnClickListener,
 			int idColIndex = c.getColumnIndex("id");
 			int nameColIndex = c.getColumnIndex("name");
 			int stColIndex = c.getColumnIndex("sumoftp");
+			int statusColIndex = c.getColumnIndex("status");
 			int commentColIndex = c.getColumnIndex("comments");
-
 			do {
 				tpTasks.add(new tpTask(c.getString(nameColIndex), c
 						.getLong(stColIndex)));
 				tpTasks.lastElement().setPeriod(c.getLong(stColIndex));
+				tpTasks.lastElement().setStatus(c.getLong(statusColIndex));
 				listAdapter.add(tpTasks.lastElement());
 			} while (c.moveToNext());
 		} else
@@ -260,13 +285,15 @@ public class MainActivity extends Activity implements OnClickListener,
 				int idColIndex = c.getColumnIndex("id");
 				int nameColIndex = c.getColumnIndex("name");
 				int stColIndex = c.getColumnIndex("sumoftp");
+				int statusColIndex = c.getColumnIndex("status");
 				int commentColIndex = c.getColumnIndex("comments");
 
 				do {
 					// отримуємо значення по номерам стовбців і пишемо все в лог
 					Log.d(LOG_TAG,
 							"ID = " + c.getInt(idColIndex) + ", name = "
-									+ c.getString(nameColIndex) + ", time = "
+									+ c.getString(nameColIndex) + ", status = "
+									+ c.getString(statusColIndex) + ", time = "
 									+ c.getLong(stColIndex) + ", comment = "
 									+ c.getString(commentColIndex));
 					// перехід на наступну строку

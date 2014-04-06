@@ -18,6 +18,10 @@ public class TimePeriods {
 		return label;
 	}
 
+	public int getLast() {
+		return timePeriods.size() - 1;
+	}
+
 	public void remove(int i) {
 		timePeriods.remove(i);
 	}
@@ -61,7 +65,7 @@ public class TimePeriods {
 	}
 
 	public Boolean getState() {
-		if(timePeriods.isEmpty())
+		if (timePeriods.isEmpty())
 			return false;
 		if (timePeriods.lastElement().getEnd() == 0) {
 			return true;
@@ -71,23 +75,30 @@ public class TimePeriods {
 
 	public long getSumOfAllPeriods() {
 		long sum = 0;
-		if(timePeriods.isEmpty()){
-			return 0;
+		if (!timePeriods.isEmpty()) {
+			for (TimePeriod p : timePeriods) {
+				sum += p.getDuration();
+			}
 		}
-		for (TimePeriod p : timePeriods) {
-			sum += p.getDuration();
-		}
-		if (timePeriods.lastElement().getEnd() == 0) {
-			long lastDuration = ((System.currentTimeMillis()))
-					- timePeriods.lastElement().getStart();
-			sum = sum - timePeriods.lastElement().getDuration() + lastDuration;
-		}
-
 		return sum;
 	}
 
+	public long getSumOfStatedPeriods(){
+		long sum = 0;
+		if (!timePeriods.isEmpty()){
+			for(int i = 0; i < getLast(); i++){
+				sum +=timePeriods.elementAt(i).getDuration();
+			}
+		}
+		return sum;
+	}
+	
 	public long getSumOfPeriod(int i) {
-		return timePeriods.elementAt(i).getDuration();
+		long a = 0;
+		if (!timePeriods.isEmpty() && (i <= getLast())) {
+			a = timePeriods.elementAt(i).getDuration();
+		}
+		return a;
 	}
 
 }
