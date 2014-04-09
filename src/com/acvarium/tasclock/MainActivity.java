@@ -100,7 +100,8 @@ public class MainActivity extends Activity implements OnClickListener,
 		}
 
 		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
+		public View getView(final int position, View convertView,
+				ViewGroup parent) {
 
 			if (convertView == null) {
 				convertView = getLayoutInflater().inflate(R.layout.list_item,
@@ -111,18 +112,27 @@ public class MainActivity extends Activity implements OnClickListener,
 			RelativeLayout bg_view;
 			ImageButton play_ib;
 			int playColor;
+			play_ib = (ImageButton) convertView
+					.findViewById(R.id.play_imageButton);
 
-			play_ib = (ImageButton)convertView.findViewById(R.id.play_imageButton);
+			play_ib.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					startStopTiming(position);
+				}
+			});
+
 			selector1 = (LinearLayout) convertView
 					.findViewById(R.id.llselector1);
-			
+
 			label = (TextView) convertView.findViewById(R.id.title);
 			label.setText(getItem(position).getLabel());
 			time = (TextView) convertView.findViewById(R.id.title2);
 			bg_view = (RelativeLayout) convertView.findViewById(R.id.bg_view);
 			l1 = (LinearLayout) convertView.findViewById(R.id.l1);
 			playColor = (R.color.sgray);
-			
+
 			if (sElenetPosition == position) {
 				playColor = (R.color.selected_task);
 				play_ib.setVisibility(View.VISIBLE);
@@ -131,7 +141,7 @@ public class MainActivity extends Activity implements OnClickListener,
 			} else {
 				play_ib.setVisibility(View.GONE);
 				l1.setBackgroundResource(R.color.sgray);
-			}			
+			}
 			if (getItem(position).getStatus() > 1000) {
 				play_ib.setVisibility(View.VISIBLE);
 				play_ib.setImageResource(R.drawable.stop);
@@ -148,7 +158,7 @@ public class MainActivity extends Activity implements OnClickListener,
 				time.setTextAppearance(getApplicationContext(),
 						R.style.normalText);
 			}
-			
+
 			selector1.setBackgroundResource(playColor);
 			return convertView;
 		}
@@ -268,6 +278,40 @@ public class MainActivity extends Activity implements OnClickListener,
 		c.close();
 		listAdapter.notifyDataSetChanged();
 
+	}
+
+	private void startStopTiming(int position) {
+		long t = (System.currentTimeMillis());
+		ContentValues cv = new ContentValues();
+		if (tpTasks.elementAt(position).getStatus() > 1000) {
+			cv.put("end", t);
+			db.update(NameSTable, cv, "start = ?", new String[] { String
+					.valueOf(tpTasks.elementAt(position).getStatus()) });
+			cv.clear();
+			long p = tpTasks.elementAt(position).getPeriod();
+			long s = tpTasks.elementAt(position).getStatus();
+			tpTasks.elementAt(position).setPeriod(p + (t - s));
+			tpTasks.elementAt(position).setStatus(0);
+
+			cv.put("sumoftp", tpTasks.elementAt(position).getPeriod());
+			cv.put("status", 0);
+			db.update(NameTable, cv, "name = ?", new String[] { tpTasks
+					.elementAt(position).getLabel() });
+			cv.clear();
+		} else {
+			tpTasks.elementAt(position).setStatus(t);
+			cv.put("start", t);
+			cv.put("end", 0);
+			cv.put("name", tpTasks.elementAt(position).getLabel());
+			db.insert(NameSTable, null, cv);
+			cv.clear();
+			
+			cv.put("status", t);
+			db.update(NameTable, cv, "name = ?", new String[] { tpTasks
+					.elementAt(position).getLabel() });
+			cv.clear();
+		}
+		listAdapter.notifyDataSetChanged();
 	}
 
 	@Override
