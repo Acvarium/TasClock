@@ -6,6 +6,8 @@
     <color name="black">#000000</color>
     <color name="unselected_task">#00FFFFFF</color>
     <color name="selected_task">#643F89FF</color>
-	<color name="sbcolor">#32FF533F</color>	
-	<color name="white">#FFFFFF</color>	
+    <color name="sbcolor">#64FF3F54</color>
+    <color name="white">#FFFFFF</color>
+    <color name="sgray">#A0D4D4D4</color>
+
 </resources>

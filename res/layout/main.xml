@@ -9,8 +9,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
-        android:listSelector="@color/selected_task"
-        android:layout_weight="2" >
+        android:layout_weight="2"
+        android:listSelector="@color/selected_task" >
     </ListView>
 
     <RelativeLayout
@@ -20,7 +20,7 @@
         android:background="#D6D6D6" >
 
         <ImageButton
-            android:id="@+id/settings_button"
+            android:id="@+id/arrow_up"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_alignParentRight="true"
@@ -30,14 +30,14 @@
             android:background="@drawable/buttonshape"
             android:padding="10dp"
             android:scaleType="fitCenter"
-            android:src="@drawable/tools" />
+            android:src="@drawable/arrowup" />
 
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="match_parent"
             android:layout_alignParentTop="true"
-            android:layout_toLeftOf="@+id/play_button"
-            android:layout_toRightOf="@+id/add_button"
+            android:layout_toLeftOf="@+id/add_button"
+            android:layout_toRightOf="@+id/arrow_down"
             android:gravity="center_horizontal" >
 
             <ImageButton
@@ -51,7 +51,7 @@
         </LinearLayout>
 
         <ImageButton
-            android:id="@+id/play_button"
+            android:id="@+id/add_button"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_alignParentTop="true"
@@ -60,14 +60,14 @@
             android:background="@drawable/buttonshape"
             android:padding="10dp"
             android:scaleType="fitCenter"
-            android:src="@drawable/play" />
+            android:src="@drawable/rplus" />
 
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="match_parent"
             android:layout_alignParentTop="true"
-            android:layout_toLeftOf="@+id/settings_button"
-            android:layout_toRightOf="@+id/play_button"
+            android:layout_toLeftOf="@+id/arrow_up"
+            android:layout_toRightOf="@+id/add_button"
             android:gravity="center_horizontal" >
 
             <ImageButton
@@ -81,7 +81,7 @@
         </LinearLayout>
 
         <ImageButton
-            android:id="@+id/add_button"
+            android:id="@+id/arrow_down"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_alignParentLeft="true"
@@ -91,7 +91,7 @@
             android:background="@drawable/buttonshape"
             android:padding="10dp"
             android:scaleType="fitCenter"
-            android:src="@drawable/rplus" />
+            android:src="@drawable/arrowdown" />
     </RelativeLayout>
 
 </LinearLayout>

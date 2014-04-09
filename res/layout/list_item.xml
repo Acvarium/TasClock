@@ -1,21 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/bg_view"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical" >
+    android:padding="1dp"
+    android:descendantFocusability="blocksDescendants"
+    android:orientation="horizontal" >
 
     <LinearLayout
         android:id="@+id/l1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="2dp"
+        android:layout_toLeftOf="@+id/llselector1"
+        android:layout_weight="1"
+        android:background="@color/selected_task"
         android:orientation="vertical" >
 
         <TextView
             android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="15dp"
+            android:layout_marginLeft="8dp"
             android:layout_marginTop="7dp"
             android:layout_weight="1"
             android:focusable="false"
@@ -28,10 +34,40 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginRight="8dp"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
             android:gravity="right"
-            android:text="hesh"
+            android:text="00:00:00"
             android:textSize="15dp"
             android:textStyle="italic" />
     </LinearLayout>
 
-</LinearLayout>
+    <LinearLayout
+        android:id="@+id/llselector1"
+        android:layout_width="25dp"
+        android:layout_height="match_parent"
+        android:layout_alignBottom="@+id/l1"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="2dp"
+        android:layout_marginRight="2dp"
+        android:layout_weight="1"
+        android:background="@color/sgray"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:gravity="center_vertical"
+        android:orientation="vertical" >
+
+        <ImageButton
+            android:id="@+id/play_imageButton"
+            android:layout_width="25dp"
+            android:layout_height="match_parent"
+            android:adjustViewBounds="true"
+            android:background="@drawable/buttonshape"
+            android:padding="3dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/play"
+            android:visibility="gone" />
+    </LinearLayout>
+
+</RelativeLayout>

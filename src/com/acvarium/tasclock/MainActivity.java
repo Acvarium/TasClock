@@ -22,12 +22,13 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class MainActivity extends Activity implements OnClickListener,
 		OnLongClickListener {
 	final String LOG_TAG = "myLogs";
-	private ImageButton addBtn, removeBtn, editBtn, playBtn, settingsBtn;
+	private ImageButton addBtn, removeBtn, editBtn, arrowUbBtn, arrowDownBtn;
 	private ListView list;
 	private ArrayAdapter<tpTask> listAdapter;
 	private Vector<tpTask> tpTasks = new Vector<tpTask>();
@@ -46,21 +47,17 @@ public class MainActivity extends Activity implements OnClickListener,
 		timesDB = new TimesDB(this);
 		db = timesDB.getWritableDatabase();
 		Log.d(LOG_TAG, "Database version " + db.getVersion());
-		
+
 		sElenetPosition = -1;
 
 		addBtn = (ImageButton) findViewById(R.id.add_button);
 		removeBtn = (ImageButton) findViewById(R.id.remove_button);
 		editBtn = (ImageButton) findViewById(R.id.edit_button);
-		playBtn = (ImageButton) findViewById(R.id.play_button);
-		settingsBtn = (ImageButton) findViewById(R.id.settings_button);
 
 		addBtn.setOnClickListener(this);
 		removeBtn.setOnClickListener(this);
 		editBtn.setOnClickListener(this);
-		playBtn.setOnClickListener(this);
 		removeBtn.setOnLongClickListener(this);
-		settingsBtn.setOnClickListener(this);
 
 		list = (ListView) findViewById(R.id.lvMain);
 
@@ -75,6 +72,7 @@ public class MainActivity extends Activity implements OnClickListener,
 					int position, long id) {
 				sElenetPosition = position;
 				Log.d(LOG_TAG, "Selected element " + sElenetPosition);
+				listAdapter.notifyDataSetChanged();
 			}
 		});
 
@@ -109,26 +107,53 @@ public class MainActivity extends Activity implements OnClickListener,
 						null);
 			}
 			TextView label, time;
-			LinearLayout bg_view;
+			LinearLayout selector1, l1;
+			RelativeLayout bg_view;
+			ImageButton play_ib;
+			int playColor;
+
+			play_ib = (ImageButton)convertView.findViewById(R.id.play_imageButton);
+			selector1 = (LinearLayout) convertView
+					.findViewById(R.id.llselector1);
 			
 			label = (TextView) convertView.findViewById(R.id.title);
 			label.setText(getItem(position).getLabel());
 			time = (TextView) convertView.findViewById(R.id.title2);
+			bg_view = (RelativeLayout) convertView.findViewById(R.id.bg_view);
+			l1 = (LinearLayout) convertView.findViewById(R.id.l1);
+			playColor = (R.color.sgray);
 			
-			bg_view = (LinearLayout)convertView.findViewById(R.id.bg_view);
-			if(getItem(position).getStatus() > 1000){
-				bg_view.setBackgroundResource(R.color.sbcolor);
-				long t = getItem(position).getPeriod() + (System.currentTimeMillis() - getItem(position).getStatus());
+			if (sElenetPosition == position) {
+				playColor = (R.color.selected_task);
+				play_ib.setVisibility(View.VISIBLE);
+				l1.setBackgroundResource(R.color.selected_task);
+
+			} else {
+				play_ib.setVisibility(View.GONE);
+				l1.setBackgroundResource(R.color.sgray);
+			}			
+			if (getItem(position).getStatus() > 1000) {
+				play_ib.setVisibility(View.VISIBLE);
+				play_ib.setImageResource(R.drawable.stop);
+				playColor = (R.color.sbcolor);
+				long t = getItem(position).getPeriod()
+						+ (System.currentTimeMillis() - getItem(position)
+								.getStatus());
 				time.setText(timeToString(t));
-			}else{
-				bg_view.setBackgroundResource(R.color.unselected_task);
-				time.setText(timeToString(getItem(position).getPeriod()));		
+				time.setTextAppearance(getApplicationContext(),
+						R.style.boldText);
+			} else {
+				play_ib.setImageResource(R.drawable.play);
+				time.setText(timeToString(getItem(position).getPeriod()));
+				time.setTextAppearance(getApplicationContext(),
+						R.style.normalText);
 			}
+			
+			selector1.setBackgroundResource(playColor);
 			return convertView;
 		}
 	}
-	
-	
+
 	private Runnable updateTimerMethod = new Runnable() {
 
 		public void run() {
@@ -154,8 +179,10 @@ public class MainActivity extends Activity implements OnClickListener,
 			if (c.moveToFirst()) {
 				int stColIndex = c.getColumnIndex("sumoftp");
 				int statusColIndex = c.getColumnIndex("status");
-				tpTasks.elementAt(sElenetPosition).setPeriod(c.getLong(stColIndex));
-				tpTasks.elementAt(sElenetPosition).setStatus(c.getLong(statusColIndex));
+				tpTasks.elementAt(sElenetPosition).setPeriod(
+						c.getLong(stColIndex));
+				tpTasks.elementAt(sElenetPosition).setStatus(
+						c.getLong(statusColIndex));
 				c.close();
 			}
 			listAdapter.notifyDataSetChanged();
@@ -251,11 +278,6 @@ public class MainActivity extends Activity implements OnClickListener,
 			startActivityForResult(intent, 1);
 
 			break;
-		case R.id.settings_button:
-			Intent intent2 = new Intent(this, TimeDataPicker.class);
-			startActivityForResult(intent2, 1);
-
-			break;
 		case R.id.remove_button:
 			if (sElenetPosition >= 0) {
 				int clearCount = db.delete(NameTable, "name = ?",
@@ -266,45 +288,14 @@ public class MainActivity extends Activity implements OnClickListener,
 								.getLabel() });
 				readData();
 			}
-
+			sElenetPosition = -1;
 			break;
 		case R.id.edit_button:
 			if (sElenetPosition >= 0) {
 				editLabel(sElenetPosition);
 			}
 			break;
-		case R.id.play_button:
-			Log.d(LOG_TAG, "--- Rows in mytable: ---");
-			// Робимо запрос всіх даинх з таблиці, получаємо Cursor
-			Cursor c = db.query(NameTable, null, null, null, null, null, null);
-			// ставимо позицію курсора на першу строку виборки
-			// якщо в виборці немає строк, то false
-			if (c.moveToFirst()) {
 
-				// визначаємо номер стовбця по виборці
-				int idColIndex = c.getColumnIndex("id");
-				int nameColIndex = c.getColumnIndex("name");
-				int stColIndex = c.getColumnIndex("sumoftp");
-				int statusColIndex = c.getColumnIndex("status");
-				int commentColIndex = c.getColumnIndex("comments");
-
-				do {
-					// отримуємо значення по номерам стовбців і пишемо все в лог
-					Log.d(LOG_TAG,
-							"ID = " + c.getInt(idColIndex) + ", name = "
-									+ c.getString(nameColIndex) + ", status = "
-									+ c.getString(statusColIndex) + ", time = "
-									+ c.getLong(stColIndex) + ", comment = "
-									+ c.getString(commentColIndex));
-					// перехід на наступну строку
-					// а якщо наступної нема (поточна остання), то false -
-					// виходимо з циклу
-				} while (c.moveToNext());
-			} else
-				Log.d(LOG_TAG, "0 rows");
-			c.close();
-
-			break;
 		default:
 			break;
 		}

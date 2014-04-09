@@ -1,5 +1,13 @@
 <resources>
 
+    <style name="boldText">
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="normalText">
+        <item name="android:textStyle">normal</item>
+    </style>
+
     <!--
         Base application theme, dependent on API level. This theme is replaced
         by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
@@ -23,5 +31,5 @@
     </style>
 
     <style name="timing" parent="android:Theme.Light"></style>
-    
+
 </resources>
