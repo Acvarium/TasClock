@@ -101,7 +101,8 @@ public class TimingActivity extends Activity implements OnClickListener,
 			public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
 					int position, long id) {
 				sElenetPosition = position;
-				editTime();
+				if(timePeriods.getEndTime(position) != 0)
+					editTime();
 				return true;
 			}
 		});

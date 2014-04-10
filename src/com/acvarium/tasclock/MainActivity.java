@@ -158,11 +158,15 @@ public class MainActivity extends Activity implements OnClickListener,
 				time.setText(timeToString(t));
 				time.setTextAppearance(getApplicationContext(),
 						R.style.boldText);
+				label.setTextAppearance(getApplicationContext(),
+						R.style.boldText);
 			} else {
 				play_ib.setImageResource(R.drawable.play);
 				time.setText(timeToString(tpTasks.elementAt(position)
 						.getPeriod()));
 				time.setTextAppearance(getApplicationContext(),
+						R.style.normalText);
+				label.setTextAppearance(getApplicationContext(),
 						R.style.normalText);
 			}
 
