@@ -5,6 +5,7 @@
     android:orientation="vertical" >
 
     <EditText
+        android:inputType="textCapSentences"
         android:id="@+id/etName"
         android:layout_width="250sp"
         android:layout_height="wrap_content"

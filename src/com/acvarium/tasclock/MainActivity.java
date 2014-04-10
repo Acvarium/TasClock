@@ -12,6 +12,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
@@ -434,6 +436,33 @@ public class MainActivity extends Activity implements OnClickListener,
 			break;
 		}
 		return false;
+	}
+	
+	
+	public boolean onOptionsItemSelected(MenuItem item) {
+		Intent intent;
+		switch (item.getItemId()) {
+		case R.id.action_settings:
+
+			break;
+		case R.id.action_about:
+			intent = new Intent(this, About.class);
+			startActivity(intent);
+			break;
+
+		default:
+			break;
+		}
+
+		return super.onOptionsItemSelected(item);
+	}
+	
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.main, menu);
+		
+		return super.onCreateOptionsMenu(menu);
 	}
 
 }
