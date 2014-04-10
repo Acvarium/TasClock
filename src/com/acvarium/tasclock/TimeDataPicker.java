@@ -108,7 +108,7 @@ public class TimeDataPicker extends Activity implements OnClickListener,
 	}
 	
 	private void showTP() {
-		tpLength = endTime - startTime;
+		tpLength = Math.abs(endTime - startTime);
 		tpLengthTV.setText(timeToString(tpLength));
 		totalTV.setText(timeToString(totalM1 + tpLength));
 	}
@@ -153,6 +153,14 @@ public class TimeDataPicker extends Activity implements OnClickListener,
 			intent = new Intent();
 			intent.putExtra("edited", true);
 			cal.setTimeInMillis(0);
+			if(startTime > endTime){
+				changeStartTime();
+				changeEndTime();
+				intent.putExtra("startTime", endTime);
+				intent.putExtra("endTime", startTime);
+				setResult(RESULT_OK, intent);
+				finish();
+			}
 			if (startTimeChanged) {
 				changeStartTime();
 				intent.putExtra("startTime", startTime);

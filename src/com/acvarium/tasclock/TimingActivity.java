@@ -358,7 +358,6 @@ public class TimingActivity extends Activity implements OnClickListener,
 		default:
 			break;
 		}
-
 	}
 
 	@Override
@@ -375,6 +374,7 @@ public class TimingActivity extends Activity implements OnClickListener,
 				timePeriods.clear();
 				listAdapter.notifyDataSetChanged();
 				writeToMasterTable();
+				sElenetPosition = -1;
 				showTP();
 			}
 			break;
