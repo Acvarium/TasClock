@@ -53,11 +53,17 @@ public class MainActivity extends Activity implements OnClickListener,
 		addBtn = (ImageButton) findViewById(R.id.add_button);
 		removeBtn = (ImageButton) findViewById(R.id.remove_button);
 		editBtn = (ImageButton) findViewById(R.id.edit_button);
+		arrowUbBtn = (ImageButton) findViewById(R.id.arrow_up);
+		arrowDownBtn = (ImageButton) findViewById(R.id.arrow_down);
 
 		addBtn.setOnClickListener(this);
 		removeBtn.setOnClickListener(this);
 		editBtn.setOnClickListener(this);
+		arrowUbBtn.setOnClickListener(this);
+		arrowDownBtn.setOnClickListener(this);
+
 		removeBtn.setOnLongClickListener(this);
+		addBtn.setOnLongClickListener(this);
 
 		list = (ListView) findViewById(R.id.lvMain);
 
@@ -127,7 +133,7 @@ public class MainActivity extends Activity implements OnClickListener,
 					.findViewById(R.id.llselector1);
 
 			label = (TextView) convertView.findViewById(R.id.title);
-			label.setText(getItem(position).getLabel());
+			label.setText(tpTasks.elementAt(position).getLabel());
 			time = (TextView) convertView.findViewById(R.id.title2);
 			bg_view = (RelativeLayout) convertView.findViewById(R.id.bg_view);
 			l1 = (LinearLayout) convertView.findViewById(R.id.l1);
@@ -142,19 +148,20 @@ public class MainActivity extends Activity implements OnClickListener,
 				play_ib.setVisibility(View.GONE);
 				l1.setBackgroundResource(R.color.sgray);
 			}
-			if (getItem(position).getStatus() > 1000) {
+			if (tpTasks.elementAt(position).getStatus() > 1000) {
 				play_ib.setVisibility(View.VISIBLE);
 				play_ib.setImageResource(R.drawable.stop);
 				playColor = (R.color.sbcolor);
-				long t = getItem(position).getPeriod()
-						+ (System.currentTimeMillis() - getItem(position)
-								.getStatus());
+				long t = tpTasks.elementAt(position).getPeriod()
+						+ (System.currentTimeMillis() - tpTasks.elementAt(
+								position).getStatus());
 				time.setText(timeToString(t));
 				time.setTextAppearance(getApplicationContext(),
 						R.style.boldText);
 			} else {
 				play_ib.setImageResource(R.drawable.play);
-				time.setText(timeToString(getItem(position).getPeriod()));
+				time.setText(timeToString(tpTasks.elementAt(position)
+						.getPeriod()));
 				time.setTextAppearance(getApplicationContext(),
 						R.style.normalText);
 			}
@@ -211,9 +218,7 @@ public class MainActivity extends Activity implements OnClickListener,
 					Log.d(LOG_TAG, "--- Update mytabe: ---");
 					// Підготовка значення для обновлення
 					cv.put("name", name);
-					cv.put("sumoftp", 0);
-					cv.put("comments", "");
-					String ss = listAdapter.getItem(sElenetPosition).getLabel();
+					String ss = tpTasks.elementAt(sElenetPosition).getLabel();
 					int updCount = db.update(NameTable, cv, "name = ?",
 							new String[] { ss });
 					ContentValues cvS = new ContentValues();
@@ -224,9 +229,10 @@ public class MainActivity extends Activity implements OnClickListener,
 					tpTasks.elementAt(sElenetPosition).setLabel(name);
 				}
 			} else {
+				cv.clear();
 				cv.put("name", name);
 				cv.put("sumoftp", 0);
-				cv.put("comments", "");
+				cv.put("ordernum", tpTasks.size());
 				long rowID = db.insert(NameTable, null, cv);
 				tpTasks.add(new tpTask(name, 0));
 				listAdapter.add(tpTasks.lastElement());
@@ -255,28 +261,42 @@ public class MainActivity extends Activity implements OnClickListener,
 		tpTasks.clear();
 		Log.d(LOG_TAG, "--- Read data: ---");
 		// Робимо запрос всіх даинх з таблиці, получаємо Cursor
-		Cursor c = db.query(NameTable, null, null, null, null, null, null);
-
+		Cursor c = db
+				.query(NameTable, null, null, null, null, null, "ordernum");
 		// ставимо позицію курсора на першу строку виборки
 		// якщо в виборці немає строк, то false
 		if (c.moveToFirst()) {
 			// визначаємо номер стовбця по виборці
-			int idColIndex = c.getColumnIndex("id");
-			int nameColIndex = c.getColumnIndex("name");
-			int stColIndex = c.getColumnIndex("sumoftp");
-			int statusColIndex = c.getColumnIndex("status");
-			int commentColIndex = c.getColumnIndex("comments");
+			int idCI = c.getColumnIndex("id");
+			int nameCI = c.getColumnIndex("name");
+			int sumCI = c.getColumnIndex("sumoftp");
+			int statusCI = c.getColumnIndex("status");
+			int commentCI = c.getColumnIndex("comments");
+			int orderNumCI = c.getColumnIndex("ordernum");
 			do {
-				tpTasks.add(new tpTask(c.getString(nameColIndex), c
-						.getLong(stColIndex)));
-				tpTasks.lastElement().setPeriod(c.getLong(stColIndex));
-				tpTasks.lastElement().setStatus(c.getLong(statusColIndex));
+				tpTasks.add(new tpTask(c.getString(nameCI), c
+						.getLong(sumCI)));
+				tpTasks.lastElement().setStatus(c.getLong(statusCI));
+				tpTasks.lastElement().setOrderNum(c.getInt(orderNumCI));
+				tpTasks.lastElement().setComment(c.getString(commentCI));
 				listAdapter.add(tpTasks.lastElement());
 			} while (c.moveToNext());
 		} else
 			Log.d(LOG_TAG, "0 rows");
 		c.close();
 		listAdapter.notifyDataSetChanged();
+	}
+	
+	private void swichTwoTasks(int a, int b){
+		tpTask t = tpTasks.elementAt(a);
+		ContentValues cv = new ContentValues();
+		cv.put("ordernum", b);
+		db.update(NameTable, cv, "name = ?",new String[] { tpTasks.elementAt(a).getLabel() });
+		cv.clear();
+		cv.put("ordernum", a);
+		db.update(NameTable, cv, "name = ?",new String[] { tpTasks.elementAt(b).getLabel() });
+		tpTasks.set(a, tpTasks.elementAt(b));
+		tpTasks.set(b, t);
 
 	}
 
@@ -305,7 +325,7 @@ public class MainActivity extends Activity implements OnClickListener,
 			cv.put("name", tpTasks.elementAt(position).getLabel());
 			db.insert(NameSTable, null, cv);
 			cv.clear();
-			
+
 			cv.put("status", t);
 			db.update(NameTable, cv, "name = ?", new String[] { tpTasks
 					.elementAt(position).getLabel() });
@@ -339,10 +359,25 @@ public class MainActivity extends Activity implements OnClickListener,
 				editLabel(sElenetPosition);
 			}
 			break;
+		case R.id.arrow_up:
+			if (sElenetPosition > 0) {
+				swichTwoTasks(sElenetPosition, sElenetPosition - 1);
+				sElenetPosition -= 1;
+			}
+
+			break;
+		case R.id.arrow_down:
+			if ((sElenetPosition >= 0)
+					&& (sElenetPosition != (tpTasks.size() - 1))) {
+				swichTwoTasks(sElenetPosition, sElenetPosition + 1);
+				sElenetPosition += 1;
+			}
+			break;
 
 		default:
 			break;
 		}
+		listAdapter.notifyDataSetChanged();
 	}
 
 	@Override
@@ -355,8 +390,41 @@ public class MainActivity extends Activity implements OnClickListener,
 			int clearCountS = db.delete(NameSTable, null, null);
 
 			Log.d(LOG_TAG, "deleted rows count = " + clearCount);
+			sElenetPosition = -1;
 			tpTasks.clear();
 			listAdapter.clear();
+			break;
+		case R.id.add_button:
+			Log.d(LOG_TAG, "--- Rows in mytable: ---");
+			// Робимо запрос всіх даинх з таблиці, получаємо Cursor
+			Cursor c = db.query(NameTable, null, null, null, null, null, "ordernum");
+			// ставимо позицію курсора на першу строку виборки
+			// якщо в виборці немає строк, то false
+			if (c.moveToFirst()) {
+
+				// визначаємо номер стовбця по виборці
+				int idCI = c.getColumnIndex("id");
+				int nameCI = c.getColumnIndex("name");
+				int sumCI = c.getColumnIndex("sumoftp");
+				int statusCI = c.getColumnIndex("status");
+				int commentCI = c.getColumnIndex("comments");
+				int orderNumCI = c.getColumnIndex("ordernum");
+				do {
+					// отримуємо значення по номерам стовбців і пишемо все в лог
+					Log.d(LOG_TAG,
+							"ID = " + c.getInt(idCI) + ", name = "
+									+ c.getString(nameCI) + ", status = "
+									+ c.getString(sumCI) + ", time = "
+									+ c.getLong(statusCI) + ", comment = "
+									+ c.getString(commentCI) + ", orderNum = "
+									+ c.getInt(orderNumCI));
+					// перехід на наступну строку
+					// а якщо наступної нема (поточна остання), то false -
+					// виходимо з циклу
+				} while (c.moveToNext());
+			} else
+				Log.d(LOG_TAG, "0 rows");
+			c.close();
 			break;
 		default:
 			break;

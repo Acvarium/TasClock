@@ -45,6 +45,7 @@ public class TimeDataPicker extends Activity implements OnClickListener,
 
 		long t = (System.currentTimeMillis());
 		intent = getIntent();
+		
 		startTime = intent.getLongExtra("startTime", t);
 		endTime = intent.getLongExtra("endTime", t);
 		total = intent.getLongExtra("total", t);

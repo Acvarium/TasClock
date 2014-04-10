@@ -7,6 +7,7 @@ public class tpTask {
 	//private int state;
 	private long period;
 	private long status;
+	private int orderNum;
 	public TimePeriods timePeriods;
 
 	public tpTask(String label, long period) {
@@ -14,7 +15,14 @@ public class tpTask {
 		timePeriods = new TimePeriods(label);
 		status = 0;
 	}
+	
+	public int getOrderNum(){
+		return orderNum;
+	}
 
+	public void setOrderNum(int orderNum){
+		this.orderNum = orderNum;
+	}
 	public void setPeriod(long period) {
 		this.period = period;
 	}

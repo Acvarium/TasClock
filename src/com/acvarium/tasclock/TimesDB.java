@@ -9,8 +9,8 @@ public class TimesDB extends SQLiteOpenHelper {
 	final String NameTable = "tasknames";
 	final String NameSTable = "tasks_timing";
 	final String LOG_TAG = "myLogs";
-	final static int DB_VERSION = 2;
-	
+	final static int DB_VERSION = 3;
+
 	public TimesDB(Context context) {
 		// конструктор суперкласу
 		super(context, "db", null, DB_VERSION);
@@ -25,8 +25,9 @@ public class TimesDB extends SQLiteOpenHelper {
 		// sumoftp - сумарний підрахований час
 		// comments - коментар до завдання
 		db.execSQL("create table " + NameTable + " ("
-				+ "id integer primary key autoincrement," + " name text,"
-				+ " sumoftp integer," + " comments text," + " status integer " +  ");");
+				+ "id integer primary key autoincrement,"
+				+ " ordernum integer," + " name text," + " sumoftp integer,"
+				+ " comments text," + " status integer " + ");");
 		db.execSQL("create table " + NameSTable + " ("
 				+ "id integer primary key autoincrement," + "name text,"
 				+ "start integer," + "end integer" + ");");
@@ -36,9 +37,13 @@ public class TimesDB extends SQLiteOpenHelper {
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		Log.d(LOG_TAG, "--- onUpdate database ---");
-		if (oldVersion == 1 && newVersion == 2) {
-			db.execSQL("ALTER TABLE " + NameTable + " ADD COLUMN " + "status integer");				
-		}
+		if (oldVersion == 1 && newVersion == 2)
+			db.execSQL("ALTER TABLE " + NameTable + " ADD COLUMN "
+					+ "status integer");
+		if (oldVersion == 2 && newVersion == 3)
+			db.execSQL("ALTER TABLE " + NameTable + " ADD COLUMN "
+					+ "ordernum integer");
+		
 		db.execSQL("DROP TABLE IF EXISTS " + NameTable);
 		db.execSQL("DROP TABLE IF EXISTS " + NameSTable);
 		onCreate(db);
