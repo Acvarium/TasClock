@@ -13,6 +13,7 @@ public class tpTask {
 	public tpTask(String label, long period) {
 		this.label = label;
 		timePeriods = new TimePeriods(label);
+		this.period = period;
 		status = 0;
 	}
 	
