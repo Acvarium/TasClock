@@ -9,7 +9,8 @@
     <string name="chronometer_initial_format">Initial format:<xliff:g id="initial-format">%</xliff:g></string>
 	<string name="about">
 	    TasClock is android time manager for freelancers and other people, who wants to control work time.\n\n
-	    This program is free and open source. It is licensed under the GNU GPL v3. 
+	    This program is free and open source. It is licensed under the GNU GPL v3. \n\n
+	    Version: 1.0\n
 	    You can download the code of this program from: \n https://github.com/Acvarium/TasClock/
 	    \n\nAuthor: Vitalii Shmorgun
 	    \nE-mail: vshmorgun@yandex.ru
